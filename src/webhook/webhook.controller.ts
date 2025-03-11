@@ -1,4 +1,12 @@
-import { Controller, Get, HttpStatus, Post, Query, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { Response } from 'express';
 
 @Controller('webhook')
@@ -7,6 +15,7 @@ export class WebhookController {
   handleWebHook(
     @Query('code') code: string,
     @Query('oa_id') oaId: string,
+    @Body() body: any,
     @Res() res: Response,
   ) {
     try {
@@ -17,6 +26,7 @@ export class WebhookController {
         process.env.ZALO_SECRET_KEY,
         process.env.ZALO_APP_ID,
       );
+      console.log('body ', body);
     } catch (ex) {
       console.log('Error ', ex);
     }
