@@ -26,6 +26,6 @@ export class WebhookController {
 
   @Get()
   findAll(@Res() res: Response) {
-    res.status(HttpStatus.OK);
+    return res.status(HttpStatus.OK).send('OK');
   }
 }
