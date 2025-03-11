@@ -15,8 +15,8 @@ export class AuthService {
   private base64UrlEncode(buffer: Buffer): string {
     return buffer
       .toString('base64')
-      .replace(/\+/g, '-') // Convert "+" to "-"
-      .replace(/\//g, '_') // Convert "/" to "_"
-      .replace(/=+$/, ''); // Remove "=" padding
+      .replace(/\+/g, '-') // Convert "+" to "-".
+      .replace(/\//g, '_') // Convert "/" to "_".
+      .replace(/=+$/, ''); // Remove "=" padding.
   }
 }
