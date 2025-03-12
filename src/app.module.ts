@@ -15,11 +15,10 @@ const config = ConfigModule.forRoot({
 
 const configSql = TypeOrmModule.forRoot({
   type: 'mssql',
-  host: 'localhost',
-  port: 3306,
-  username: 'root',
-  password: '',
-  database: '',
+  host: '172.16.0.91',
+  username: 'sa',
+  password: 'salnt123',
+  database: 'HIS_DATA',
   synchronize: false, // Không cần TypeORM tự tạo bảng
   options: {
     encrypt: false,
@@ -28,7 +27,13 @@ const configSql = TypeOrmModule.forRoot({
 });
 
 @Module({
-  imports: [config, configSql, WebhookModule, AuthModule, DatabaseModule],
+  imports: [
+    config,
+    // configSql,
+    WebhookModule,
+    AuthModule,
+    // DatabaseModule,
+  ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService],
 })

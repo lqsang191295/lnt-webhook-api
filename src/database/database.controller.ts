@@ -7,6 +7,7 @@ export class DatabaseController {
 
   @Get('users')
   async getUsers() {
+    console.log('1111');
     return this.databaseService.getAllUsers();
   }
 

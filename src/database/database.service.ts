@@ -11,7 +11,7 @@ export class DatabaseService {
   }
 
   async getAllUsers() {
-    return this.rawQuery('SELECT * FROM Users');
+    return this.rawQuery('SELECT TOP(10) * FROM BV_Master');
   }
 
   async createUser(name: string, email: string, password: string) {
