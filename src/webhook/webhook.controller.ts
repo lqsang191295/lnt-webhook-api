@@ -5,23 +5,29 @@ import {
   HttpStatus,
   Post,
   Query,
+  Req,
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { WebhookService } from './webhook.service';
+import { DatabaseService } from '../database/database.service';
+import { error } from 'console';
 
 @Controller('webhook')
 export class WebhookController {
-  constructor(private readonly webhookService: WebhookService) {}
+  constructor(
+    private readonly webhookService: WebhookService,
+    private readonly databaseService: DatabaseService,
+  ) {}
 
   @Post()
-  handleWebHook(
-    @Query('code') code: string,
-    @Query('oa_id') oaId: string,
-    @Body() body: any,
+  async handleWebHook(
+    @Body() body: Record<string, unknown>,
     @Res() res: Response,
   ) {
     try {
+      const { code, oaId } = body;
+
       console.log('Code:', code);
       console.log('OA_ID:', oaId);
       console.log(
@@ -32,7 +38,10 @@ export class WebhookController {
       console.log('body ', body);
 
       if (code && oaId) {
-        const data = this.webhookService.getAccessToken(code);
+        const data = await this.webhookService.getAccessToken(code as string);
+
+        this.databaseService.saveToken(data.accessToken, data.refreshToken);
+
         res.status(HttpStatus.OK).send({ ...data });
       } else if (body) {
         //
@@ -49,20 +58,16 @@ export class WebhookController {
         //   },
         // };
       }
-
-      res.status(HttpStatus.OK).send({});
-    } catch (ex) {
-      console.log('Error ', ex);
+    } catch (error) {
+      console.log('Error ', error);
+      res.status(HttpStatus.FAILED_DEPENDENCY).send({
+        error,
+      });
     }
   }
 
-  @Get('refresh')
-  async refreshToken(@Query('refresh_token') refreshToken: string) {
+  @Post('refresh-token')
+  async refreshToken(@Body('refresh_token') refreshToken: string) {
     return this.webhookService.refreshAccessToken(refreshToken);
-  }
-
-  @Get()
-  findAll(@Res() res: Response) {
-    return res.status(HttpStatus.OK).send('OK');
   }
 }

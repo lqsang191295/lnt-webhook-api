@@ -7,7 +7,7 @@ export class WebhookService {
   private readonly appSecret = process.env.ZALO_SECRET_KEY;
 
   async getAccessToken(authCode: string) {
-    const url = 'https://oauth.zaloapp.com/v4/access_token';
+    const url = 'https://oauth.zaloapp.com/v4/oa/access_token';
 
     const data = {
       app_id: this.appId,
@@ -16,8 +16,11 @@ export class WebhookService {
       grant_type: 'authorization_code',
     };
 
+    console.log('data ------ ', data);
+
     try {
       const response = await axios.post(url, data);
+      console.log('response.data === ', response.data);
       return response.data;
     } catch (error) {
       console.error(
@@ -29,14 +32,16 @@ export class WebhookService {
   }
 
   async refreshAccessToken(refreshToken: string) {
-    const url = 'https://oauth.zaloapp.com/v4/access_token';
+    const url = 'https://oauth.zaloapp.com/v4/oa/access_token';
 
     const data = {
       app_id: this.appId,
-      app_secret: this.appSecret,
+      secret_key: this.appSecret,
       refresh_token: refreshToken,
       grant_type: 'refresh_token',
     };
+
+    console.log('data ', data);
 
     try {
       const response = await axios.post(url, data);

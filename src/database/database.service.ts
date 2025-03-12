@@ -20,4 +20,25 @@ export class DatabaseService {
       [name, email, password],
     );
   }
+
+  async getToken() {
+    return this.rawQuery(
+      `SELECT Thamso FROM HT_ThamSo WHERE Ma = 'AccessToken_Zalo' OR Ma = 'RefreshToken_Zalo'`,
+    );
+  }
+
+  async saveToken(accessToken: string, refreshToken: string) {
+    const accessTokenData = await this.rawQuery(
+      `UPDATE HT_ThamSo SET Thamso = '${accessToken}' WHERE Ma = 'AccessToken_Zalo'`,
+    );
+
+    const refreshTokenData = await this.rawQuery(
+      `UPDATE HT_ThamSo SET Thamso = '${refreshToken}' WHERE Ma = 'RefreshToken_Zalo'`,
+    );
+
+    return {
+      accessTokenData,
+      refreshTokenData,
+    };
+  }
 }

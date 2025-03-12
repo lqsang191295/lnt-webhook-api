@@ -27,13 +27,7 @@ const configSql = TypeOrmModule.forRoot({
 });
 
 @Module({
-  imports: [
-    config,
-    // configSql,
-    WebhookModule,
-    AuthModule,
-    // DatabaseModule,
-  ],
+  imports: [config, configSql, WebhookModule, AuthModule, DatabaseModule],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService],
 })
