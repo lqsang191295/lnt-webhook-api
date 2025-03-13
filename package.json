@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "dev": "cross-env NODE_ENV=development npm run start",
-    "production": "cross-env NODE_ENV=production npm run start:prod",
+    "prod": "cross-env NODE_ENV=production npm run start:prod",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",

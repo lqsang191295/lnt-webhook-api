@@ -13,7 +13,7 @@ console.log(' process.env.NODE_ENV === ', process.env.NODE_ENV);
 
 const config = ConfigModule.forRoot({
   envFilePath:
-    process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local',
+    process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.local',
   isGlobal: true, // Cho phép sử dụng process.env ở mọi nơi
 });
 
