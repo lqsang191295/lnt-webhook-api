@@ -1,17 +1,7 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpStatus,
-  Post,
-  Query,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { WebhookService } from './webhook.service';
 import { DatabaseService } from '../database/database.service';
-import { error } from 'console';
 
 @Controller('webhook')
 export class WebhookController {
