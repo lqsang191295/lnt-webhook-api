@@ -1,22 +1,25 @@
-import { Injectable } from '@nestjs/common';
-import * as crypto from 'crypto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class AuthService {
-  generateCodeVerifier(): string {
-    return crypto.randomBytes(64).toString('hex'); // Random 64 bytes -> Hex
-  }
+  constructor(
+    private readonly usersService: UserService,
+    private readonly jwtService: JwtService,
+  ) {}
 
-  generateCodeChallenge(codeVerifier: string): string {
-    const hash = crypto.createHash('sha256').update(codeVerifier).digest();
-    return this.base64UrlEncode(hash);
-  }
+  async signIn(username: string, password: string) {
+    if (!username || !password) throw new UnauthorizedException();
 
-  private base64UrlEncode(buffer: Buffer): string {
-    return buffer
-      .toString('base64')
-      .replace(/\+/g, '-') // Convert "+" to "-".
-      .replace(/\//g, '_') // Convert "/" to "_".
-      .replace(/=+$/, ''); // Remove "=" padding.
+    const user = await this.usersService.findOne(username);
+
+    if (user?.password !== password) {
+      throw new UnauthorizedException();
+    }
+
+    const payload = { username: user.username, sub: user.userId };
+
+    return await this.jwtService.signAsync(payload);
   }
 }

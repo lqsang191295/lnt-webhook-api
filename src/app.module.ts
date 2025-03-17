@@ -8,6 +8,10 @@ import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseModule } from './database/database.module';
+import { HelperModule } from './helper/helper.module';
+import { UserModule } from './user/user.module';
+import { GuardModule } from './guard/guard.module';
+import { JwtModule } from '@nestjs/jwt';
 
 console.log(' process.env.NODE_ENV === ', process.env.NODE_ENV);
 
@@ -17,7 +21,16 @@ const config = ConfigModule.forRoot({
   isGlobal: true, // Cho phép sử dụng process.env ở mọi nơi
 });
 
-const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME } = process.env;
+const {
+  DB_HOST,
+  DB_USERNAME,
+  DB_PASSWORD,
+  DB_NAME,
+  JWT_SECRET,
+  JWT_EXPIRESIN,
+} = process.env;
+
+console.log('JWT_EXPIRESIN ========== ', JWT_EXPIRESIN);
 
 const configSql = TypeOrmModule.forRoot({
   type: 'mssql',
@@ -31,9 +44,25 @@ const configSql = TypeOrmModule.forRoot({
     trustServerCertificate: true,
   },
 });
+const jwtConfig = JwtModule.register({
+  global: true,
+  secret: JWT_SECRET,
+  signOptions: { expiresIn: JWT_EXPIRESIN },
+});
 
 @Module({
-  imports: [config, configSql, WebhookModule, AuthModule, DatabaseModule],
+  imports: [
+    jwtConfig,
+    config,
+    configSql,
+    GuardModule,
+    WebhookModule,
+    AuthModule,
+    DatabaseModule,
+    HelperModule,
+    UserModule,
+    ConfigModule,
+  ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService],
 })
