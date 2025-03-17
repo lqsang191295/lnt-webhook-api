@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as cors from 'cors';
 
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
@@ -15,8 +16,15 @@ async function bootstrap() {
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
-
-  app.enableCors();
+  app.use(
+    cors({
+      origin: 'http://localhost:3001', // 🔥 Phải trùng với FE
+      credentials: true, // 🔥 Cho phép gửi & nhận cookie
+    }),
+  );
+  // app.enableCors({
+  //   credentials: true,
+  // });
   app.use(cookieParser());
 
   await app.listen(process.env.PORT ?? 3100);

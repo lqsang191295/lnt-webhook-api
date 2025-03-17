@@ -34,16 +34,22 @@ export class AuthController {
     @Body('password') password: string,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const jwt = await this.authService.signIn(username, password);
+    try {
+      const jwt = await this.authService.signIn(username, password);
 
-    response.cookie('jwt', jwt, {
-      httpOnly: true, // 🔐 Bảo vệ cookie, ngăn JavaScript truy cập
-      secure: process.env.NODE_ENV === 'production', // 🔒 Chỉ gửi cookie qua HTTPS nếu ở production
-      sameSite: 'strict', // 🛡️ Ngăn CSRF
-      maxAge: 7 * 24 * 60 * 60 * 1000, // ⏳ 7 ngày (tính bằng milliseconds)
-    });
+      response.cookie('jwt', jwt, {
+        httpOnly: true, // 🔐 Bảo vệ cookie, ngăn JavaScript truy cập
+        secure: process.env.NODE_ENV === 'production', // 🔒 Chỉ gửi cookie qua HTTPS nếu ở production
+        sameSite: 'strict', // 🛡️ Ngăn CSRF
+        maxAge: 7 * 24 * 60 * 60 * 1000, // ⏳ 7 ngày (tính bằng milliseconds)
+      });
 
-    return jwt;
+      return { jwt };
+    } catch (error) {
+      return {
+        error,
+      };
+    }
   }
 
   @Public()
