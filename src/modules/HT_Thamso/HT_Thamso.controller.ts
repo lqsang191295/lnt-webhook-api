@@ -1,11 +1,13 @@
 import { Controller, Get, Post } from '@nestjs/common';
 import { HT_ThamsoService } from './HT_Thamso.service';
 import { In } from 'typeorm';
+import { Roles } from 'src/common/decorators/role.decorator';
 
 @Controller('module/HT_Thamso')
 export class HT_ThamsoController {
   constructor(private readonly htThamSoService: HT_ThamsoService) {}
 
+  @Roles(['admin'])
   @Get()
   getAll() {
     return this.htThamSoService.findAll();
@@ -13,7 +15,10 @@ export class HT_ThamsoController {
 
   @Get('zalo-token')
   getZaloToken() {
-    return this.htThamSoService.findById([{ Ma: 'AccessToken_Zalo' }, { Ma: 'RefreshToken_Zalo' }]);
+    return this.htThamSoService.findById([
+      { Ma: 'AccessToken_Zalo' },
+      { Ma: 'RefreshToken_Zalo' },
+    ]);
   }
 
   @Post('add-tham-so')

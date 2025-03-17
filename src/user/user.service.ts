@@ -9,11 +9,13 @@ export class UserService {
       userId: 1,
       username: 'admin',
       password: 'admin',
+      roles: ['admin'],
     },
     {
       userId: 2,
       username: 'asdasd',
       password: 'asdasd',
+      roles: ['employer'],
     },
   ];
 

@@ -27,8 +27,8 @@ export class AuthGuard implements CanActivate {
     if (isPublic) return true;
 
     const request = context.switchToHttp().getRequest();
-    let token = this.extractTokenFromHeader(request);
     const cookies = request.cookies;
+    let token = this.extractTokenFromHeader(request);
 
     if (!token) {
       if (cookies) token = cookies.jwt;
@@ -41,15 +41,11 @@ export class AuthGuard implements CanActivate {
     try {
       const JWT_SECRET = this.configService.get<string>('JWT_SECRET');
       const JWT_EXPIRESIN = this.configService.get<string>('JWT_EXPIRESIN');
-      const payload = await this.jwtService.signAsync(
-        { token },
-        {
-          secret: JWT_SECRET,
-          expiresIn: JWT_EXPIRESIN,
-        },
-      );
+      const user = await this.jwtService.verifyAsync(token, {
+        secret: JWT_SECRET,
+      });
 
-      request['user'] = payload;
+      request['user'] = user;
     } catch (ex) {
       console.log('exxx ', ex);
       throw new UnauthorizedException();
