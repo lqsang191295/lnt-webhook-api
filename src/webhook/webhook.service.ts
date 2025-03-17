@@ -1,26 +1,34 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
+import { TypeResponseZalo, TypeResponseZaloError } from 'src/common/types/zalo';
 
 @Injectable()
 export class WebhookService {
-  private readonly appId = process.env.ZALO_APP_ID;
-  private readonly appSecret = process.env.ZALO_SECRET_KEY;
+  private zaloAppId;
+  private zaloAppSecret;
+  private zaloUrlOauth;
 
-  async getAccessToken(authCode: string) {
-    const url = 'https://oauth.zaloapp.com/v4/oa/access_token';
+  constructor(private configService: ConfigService) {
+    this.zaloAppId = this.configService.get<string>('ZALO_APP_ID') || '';
+    this.zaloAppSecret =
+      this.configService.get<string>('ZALO_SECRET_KEY') || '';
+    this.zaloUrlOauth = this.configService.get<string>('ZALO_URL_OAUTH') || '';
+  }
 
+  async getAccessToken(
+    authCode: string,
+  ): Promise<TypeResponseZalo | TypeResponseZaloError> {
     const data = {
-      app_id: this.appId,
-      secret_key: this.appSecret,
+      app_id: this.zaloAppId,
+      secret_key: this.zaloAppSecret,
       code: authCode,
       grant_type: 'authorization_code',
     };
 
-    console.log('data ------ ', data);
-
     try {
-      const response = await axios.post(url, data);
-      console.log('response.data === ', response.data);
+      const response = await axios.post(this.zaloUrlOauth, data);
+
       return response.data;
     } catch (error) {
       console.error(
@@ -31,20 +39,19 @@ export class WebhookService {
     }
   }
 
-  async refreshAccessToken(refreshToken: string) {
-    const url = 'https://oauth.zaloapp.com/v4/oa/access_token';
-
+  async refreshAccessToken(
+    refreshToken: string,
+  ): Promise<TypeResponseZalo | TypeResponseZaloError> {
     const data = {
-      app_id: this.appId,
-      secret_key: this.appSecret,
+      app_id: this.zaloAppId,
+      secret_key: this.zaloAppSecret,
       refresh_token: refreshToken,
       grant_type: 'refresh_token',
     };
 
-    console.log('data ', data);
-
     try {
-      const response = await axios.post(url, data);
+      const response = await axios.post(this.zaloUrlOauth, data);
+
       return response.data;
     } catch (error) {
       console.error(

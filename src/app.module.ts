@@ -12,6 +12,8 @@ import { HelperModule } from './helper/helper.module';
 import { UserModule } from './user/user.module';
 import { GuardModule } from './guard/guard.module';
 import { JwtModule } from '@nestjs/jwt';
+import { ModulesModule } from './modules/modules.module';
+import { HT_ThamSo } from './modules/HT_Thamso/HT_ThamSo.entity';
 
 console.log(' process.env.NODE_ENV === ', process.env.NODE_ENV);
 
@@ -30,19 +32,18 @@ const {
   JWT_EXPIRESIN,
 } = process.env;
 
-console.log('JWT_EXPIRESIN ========== ', JWT_EXPIRESIN);
-
 const configSql = TypeOrmModule.forRoot({
   type: 'mssql',
   host: DB_HOST,
   username: DB_USERNAME,
   password: DB_PASSWORD,
   database: DB_NAME,
-  synchronize: false, // Không cần TypeORM tự tạo bảng
   options: {
     encrypt: false,
     trustServerCertificate: true,
   },
+  entities: [HT_ThamSo],
+  synchronize: false,
 });
 const jwtConfig = JwtModule.register({
   global: true,
@@ -62,6 +63,7 @@ const jwtConfig = JwtModule.register({
     HelperModule,
     UserModule,
     ConfigModule,
+    ModulesModule,
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService],

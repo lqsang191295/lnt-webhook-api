@@ -1,13 +1,14 @@
 import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { WebhookService } from './webhook.service';
-import { DatabaseService } from '../database/database.service';
+import { HT_ThamsoService } from 'src/modules/HT_Thamso/HT_Thamso.service';
+import { TypeResponseZaloError } from 'src/common/types/zalo';
 
 @Controller('webhook')
 export class WebhookController {
   constructor(
     private readonly webhookService: WebhookService,
-    private readonly databaseService: DatabaseService,
+    private readonly htThamSoService: HT_ThamsoService,
   ) {}
 
   @Post()
@@ -20,17 +21,15 @@ export class WebhookController {
 
       console.log('Code:', code);
       console.log('OA_ID:', oaId);
-      console.log(
-        'Key secret ',
-        process.env.ZALO_SECRET_KEY,
-        process.env.ZALO_APP_ID,
-      );
-      console.log('body ', body);
 
       if (code && oaId) {
         const data = await this.webhookService.getAccessToken(code as string);
 
-        this.databaseService.saveToken(data.accessToken, data.refreshToken);
+        if ('error' in data) {
+          return res.status(HttpStatus.FAILED_DEPENDENCY).send({ ...data });
+        }
+
+        this.htThamSoService.saveToken(data.access_token, data.refresh_token);
 
         res.status(HttpStatus.OK).send({ ...data });
       } else if (body) {
@@ -57,7 +56,22 @@ export class WebhookController {
   }
 
   @Post('refresh-token')
-  async refreshToken(@Body('refresh_token') refreshToken: string) {
-    return this.webhookService.refreshAccessToken(refreshToken);
+  async refreshToken(
+    @Body('refresh_token') refreshToken: string,
+    @Res() res: Response,
+  ) {
+    try {
+      const data = await this.webhookService.refreshAccessToken(refreshToken);
+
+      if ('error' in data) {
+        return res.status(HttpStatus.FAILED_DEPENDENCY).send({ ...data });
+      }
+
+      this.htThamSoService.saveToken(data.access_token, data.refresh_token);
+
+      return res.status(HttpStatus.OK).send({ ...data });
+    } catch (error) {
+      return res.status(HttpStatus.FAILED_DEPENDENCY).send({ error });
+    }
   }
 }
