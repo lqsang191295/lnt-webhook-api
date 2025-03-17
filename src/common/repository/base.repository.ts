@@ -11,25 +11,12 @@ export class BaseRepository<T extends ObjectLiteral> {
 
   constructor(dataSource: DataSource, entity: EntityTarget<T>) {
     this.repository = dataSource.getRepository(entity);
-
-    console.log(this.repository.metadata.tableName);
-
-    console.log('this.repository === ', dataSource.isInitialized);
   }
 
   async findAll(): Promise<T[]> {
     return this.repository.find();
   }
-
-  async findById(id: any): Promise<T[] | null> {
-    return this.repository.find({ where: { Ma: id } } as any);
-  }
-
-  async findByRecord(payload: Record<string, any>): Promise<T[] | null> {
-    if (!payload || Object.keys(payload).length === 0) {
-      throw new Error('Payload is empty or invalid.');
-    }
-
+  async findById(payload: Partial<T> | Partial<T>[]): Promise<T[] | null> {
     return this.repository.find({ where: payload } as any);
   }
 
@@ -38,7 +25,7 @@ export class BaseRepository<T extends ObjectLiteral> {
     return this.repository.save(entity);
   }
 
-  async update(id: string, data: Partial<T>): Promise<T | null> {
+  async update(id: Partial<T>, data: Partial<T>): Promise<T | null> {
     await this.repository.update(id, data);
     return data as T;
   }

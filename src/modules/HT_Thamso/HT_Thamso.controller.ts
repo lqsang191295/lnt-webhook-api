@@ -13,7 +13,7 @@ export class HT_ThamsoController {
 
   @Get('zalo-token')
   getZaloToken() {
-    return this.htThamSoService.findById('AccessToken_Zalo');
+    return this.htThamSoService.findById([{ Ma: 'AccessToken_Zalo' }, { Ma: 'RefreshToken_Zalo' }]);
   }
 
   @Post('add-tham-so')

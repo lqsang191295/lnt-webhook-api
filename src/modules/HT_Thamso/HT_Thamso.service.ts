@@ -25,20 +25,26 @@ export class HT_ThamsoService extends BaseRepository<HT_ThamSo> {
     const htDto = new HT_ThamSoDto();
 
     htDto.Ma = 'test1';
-    htDto.Thamso = 'test12222';
-    htDto.Diengiai = 'test12222';
+    htDto.Thamso = 'test131121222';
+    htDto.Diengiai = 'test11231231231232222';
 
-    return this.update(htDto.Ma, htDto);
+    return this.update({ Ma: htDto.Ma }, htDto);
   }
 
   async saveToken(accessToken: string, refreshToken: string) {
-    const accessTokenData = await this.update('AccessToken_Zalo', {
-      Thamso: accessToken,
-    });
+    const accessTokenData = await this.update(
+      { Ma: 'AccessToken_Zalo' },
+      {
+        Thamso: accessToken,
+      },
+    );
 
-    const refreshTokenData = await this.update('RefreshToken_Zalo', {
-      Thamso: refreshToken,
-    });
+    const refreshTokenData = await this.update(
+      { Ma: 'RefreshToken_Zalo' },
+      {
+        Thamso: refreshToken,
+      },
+    );
 
     return {
       accessTokenData,
