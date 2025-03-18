@@ -5,14 +5,14 @@ import { Roles } from 'src/common/decorators/role.decorator';
 
 @Controller('module/HT_Thamso')
 export class HT_ThamsoController {
-  // private readonly logger = new Logger(HT_ThamsoController.name);
+  private readonly logger = new Logger(HT_ThamsoController.name);
 
   constructor(private readonly htThamSoService: HT_ThamsoService) {}
 
   @Roles(['admin'])
   @Get()
   getAll() {
-    // this.logger.log('Find all ht tham so...');
+    this.logger.warn('Find all ht tham so..');
 
     return this.htThamSoService.findAll();
   }
