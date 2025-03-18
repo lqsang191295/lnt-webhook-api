@@ -12,7 +12,9 @@ import { UserModule } from './modules/user/user.module';
 import { GuardModule } from './modules/guard/guard.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ModulesModule } from './modules/modules.module';
-import { HT_ThamSo } from './modules/HT_Thamso/HT_ThamSo.entity';
+import { HT_CronJobsEntity } from './modules/HT_CronJobs/HT_CronJobs.entity';
+import { HT_ThamSoEntity } from './modules/HT_Thamso/HT_ThamSo.entity';
+import { ScheduleModule } from '@nestjs/schedule';
 
 console.log(' process.env.NODE_ENV === ', process.env.NODE_ENV);
 
@@ -41,9 +43,10 @@ const configSql = TypeOrmModule.forRoot({
     encrypt: false,
     trustServerCertificate: true,
   },
-  entities: [HT_ThamSo],
+  entities: [HT_ThamSoEntity, HT_CronJobsEntity],
   synchronize: false,
 });
+
 const jwtConfig = JwtModule.register({
   global: true,
   secret: JWT_SECRET,
@@ -62,6 +65,7 @@ const jwtConfig = JwtModule.register({
     UserModule,
     ConfigModule,
     ModulesModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService],

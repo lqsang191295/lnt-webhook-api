@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 @Entity({
   name: 'HT_ThamSo',
 })
-export class HT_ThamSo {
+export class HT_ThamSoEntity {
   @PrimaryColumn()
   Ma: string;
 

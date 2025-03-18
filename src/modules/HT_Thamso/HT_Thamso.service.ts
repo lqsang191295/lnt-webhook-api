@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { BaseRepository } from 'src/common/repository/base.repository';
-import { HT_ThamSo } from './HT_ThamSo.entity';
+import { HT_ThamSoEntity } from './HT_ThamSo.entity';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { HT_ThamSoDto } from './HT_Thamso.dto';
 
 @Injectable()
-export class HT_ThamsoService extends BaseRepository<HT_ThamSo> {
+export class HT_ThamsoService extends BaseRepository<HT_ThamSoEntity> {
   constructor(@InjectDataSource() private dataSource: DataSource) {
-    super(dataSource, HT_ThamSo);
+    super(dataSource, HT_ThamSoEntity);
   }
 
   createDataTest() {
@@ -16,7 +16,7 @@ export class HT_ThamsoService extends BaseRepository<HT_ThamSo> {
 
     htDto.Ma = 'test1';
     htDto.Thamso = 'test1';
-    htDto.Diengiai = 'test1';
+    htDto.Diengiai = 'test12';
 
     return this.create(htDto);
   }
