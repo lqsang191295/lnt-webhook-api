@@ -1,36 +1,85 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Cron, Interval, SchedulerRegistry, Timeout } from '@nestjs/schedule';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { SchedulerRegistry, Timeout } from '@nestjs/schedule';
 import { TypeJob } from 'src/common/types/task';
-import { HT_ThamsoService } from '../HT_Thamso/HT_Thamso.service';
-import { WebhookService } from '../webhook/webhook.service';
+import { HT_CronJobsService } from '../HT_CronJobs/HT_CronJobs.service';
+import { CronJob } from 'cron';
+import { TasksHandlerService } from './tasks-handler.service';
 
 @Injectable()
-export class TasksService {
+export class TasksService implements OnModuleInit {
   private readonly logger = new Logger(TasksService.name);
 
   constructor(
     private schedulerRegistry: SchedulerRegistry,
-    private readonly ht_ThamsoService: HT_ThamsoService,
-    private readonly webhookService: WebhookService,
+    private readonly ht_CronJobsService: HT_CronJobsService,
+    private readonly tasksHandlerService: TasksHandlerService,
   ) {}
 
-  @Cron('10 * * * * *', {
-    name: 'zalo-refresh-token',
-  })
-  async handleCron() {
-    console.log('aaaaaaaaaaaaaaaaaaa 45s');
-    const data = await this.ht_ThamsoService.findById({
-      Ma: 'RefreshToken_Zalo',
+  async onModuleInit() {
+    try {
+      const cronJobs = await this.ht_CronJobsService.findAll();
+
+      if (!cronJobs || !cronJobs.length) return;
+
+      for (let i = 0; i < cronJobs.length; i++) {
+        const { name, func, time, status } = cronJobs[i];
+        this.addCronJob(name, func, time, status);
+      }
+    } catch (error) {
+      //
+    }
+  }
+
+  getHandlerFunction(funcName: string): (() => Promise<void>) | null {
+    const handlers: Record<string, () => Promise<void>> = {
+      handleCronZaloRefreshToken: () =>
+        this.tasksHandlerService.handleCronZaloRefreshToken(),
+    };
+
+    return handlers[funcName] || null;
+  }
+
+  addCronJob(name: string, func: string, time: string, status: boolean) {
+    const handler = this.getHandlerFunction(func);
+
+    if (!handler) {
+      return;
+    }
+
+    const job = new CronJob(`${time}`, async () => {
+      await handler();
     });
 
-    if (!data || !data.length) return;
+    this.schedulerRegistry.addCronJob(name, job);
 
-    const refreshToken = data[0].Thamso;
-
-    if (!refreshToken) return;
-
-    this.webhookService.refreshAccessToken(refreshToken);
+    if (status) {
+      job.start();
+    } else {
+      job.stop();
+    }
   }
+
+  // @Cron('10 * * * * *', {
+  //   name: 'zalo-refresh-token',
+  // })
+  // async handleCronZaloRefreshToken() {
+  //   console.log('aaaaaaaaaaaaaaaaaaa 45s');
+  //   try {
+  //     const data = await this.ht_ThamsoService.findById({
+  //       Ma: 'RefreshToken_Zalo',
+  //     });
+
+  //     if (!data || !data.length) return;
+
+  //     const refreshToken = data[0].Thamso;
+
+  //     if (!refreshToken) return;
+
+  //     this.webhookService.refreshAccessToken(refreshToken);
+  //   } catch (ex) {
+  //     this.logger.error(ex.message);
+  //   }
+  // }
 
   getAllCronJobs() {
     const cronJobs = this.schedulerRegistry.getCronJobs();
@@ -68,6 +117,13 @@ export class TasksService {
 
     job.stop();
 
+    this.ht_CronJobsService.update(
+      { name: id },
+      {
+        status: false,
+      },
+    );
+
     return;
   }
 
@@ -77,6 +133,12 @@ export class TasksService {
     if (!job) return;
 
     job.start();
+    this.ht_CronJobsService.update(
+      { name: id },
+      {
+        status: true,
+      },
+    );
 
     return;
   }

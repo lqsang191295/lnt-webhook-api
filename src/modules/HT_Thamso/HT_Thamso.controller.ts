@@ -25,7 +25,7 @@ export class HT_ThamsoController {
     ]);
   }
 
-  @Post('add-tham-so')
+  @Post('add')
   addThamsoTest() {
     return this.htThamSoService.createDataTest();
   }

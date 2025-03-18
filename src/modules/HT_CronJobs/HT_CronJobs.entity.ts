@@ -11,20 +11,14 @@ import {
 })
 export class HT_CronJobsEntity {
   @PrimaryColumn()
-  id: number;
+  name: string;
 
   @Column()
-  name: string;
+  func: string;
 
   @Column()
   time: string;
 
   @Column()
   status: boolean;
-
-  @CreateDateColumn({ type: 'timestamp' })
-  created_at: Date;
-
-  @UpdateDateColumn({ type: 'timestamp' })
-  updated_at: Date;
 }
