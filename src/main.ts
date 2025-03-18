@@ -4,9 +4,15 @@ import * as cors from 'cors';
 
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
+// import { ConsoleLogger } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(
+    AppModule,
+    //   {
+    //   logger: new ConsoleLogger(),
+    // }
+  );
 
   const config = new DocumentBuilder()
     .setTitle('Cats example')
