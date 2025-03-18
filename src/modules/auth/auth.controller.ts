@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
-import { HelperService } from 'src/helper/helper.service';
+import { HelperService } from 'src/modules/helper/helper.service';
 import { AuthService } from './auth.service';
 import { Public } from 'src/common/decorators/public.decorator';
 import { Response } from 'express';
