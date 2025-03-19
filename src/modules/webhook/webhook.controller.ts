@@ -2,7 +2,7 @@ import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { WebhookService } from './webhook.service';
 import { HT_ThamsoService } from 'src/modules/HT_Thamso/HT_Thamso.service';
-import { TypeResponseZaloError } from 'src/common/types/zalo';
+import { ApiResponse } from 'src/common/api/api-response';
 
 @Controller('webhook')
 export class WebhookController {
@@ -26,32 +26,26 @@ export class WebhookController {
         const data = await this.webhookService.getAccessToken(code as string);
 
         if ('error' in data) {
-          return res.status(HttpStatus.FAILED_DEPENDENCY).send({ ...data });
+          return ApiResponse.error(
+            'Refresh token failed!',
+            500,
+            data.error_reason,
+          );
         }
 
-        this.htThamSoService.saveToken(data.access_token, data.refresh_token);
+        await this.htThamSoService.saveToken(
+          data.access_token,
+          data.refresh_token,
+        );
 
-        res.status(HttpStatus.OK).send({ ...data });
-      } else if (body) {
-        //
-        // const bodyData = {
-        //   app_id: '1245263641202768423',
-        //   user_id_by_app: '4036408378183179479',
-        //   event_name: 'user_send_text',
-        //   timestamp: '1741702286087',
-        //   sender: { id: '7084782037479163447' },
-        //   recipient: { id: '579745863508352884' },
-        //   message: {
-        //     msg_id: 'This is message id',
-        //     text: 'This is testing message',
-        //   },
-        // };
+        return ApiResponse.success('Handle token success!', {
+          accessToken: data.access_token,
+          refreshToken: data.refresh_token,
+        });
       }
     } catch (error) {
       console.log('Error ', error);
-      res.status(HttpStatus.FAILED_DEPENDENCY).send({
-        error,
-      });
+      return ApiResponse.error('Refresh token failed!', 500, error.message);
     }
   }
 
@@ -67,11 +61,17 @@ export class WebhookController {
         return res.status(HttpStatus.FAILED_DEPENDENCY).send({ ...data });
       }
 
-      this.htThamSoService.saveToken(data.access_token, data.refresh_token);
+      await this.htThamSoService.saveToken(
+        data.access_token,
+        data.refresh_token,
+      );
 
-      return res.status(HttpStatus.OK).send({ ...data });
+      return ApiResponse.success('Refresh token success!', {
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
+      });
     } catch (error) {
-      return res.status(HttpStatus.FAILED_DEPENDENCY).send({ error });
+      return ApiResponse.error('Refresh token failed!', 500, error.message);
     }
   }
 }
