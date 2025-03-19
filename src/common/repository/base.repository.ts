@@ -30,7 +30,7 @@ export class BaseRepository<T extends ObjectLiteral> {
     return data as T;
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: Partial<T>): Promise<void> {
     await this.repository.delete(id);
   }
 }

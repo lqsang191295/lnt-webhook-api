@@ -133,6 +133,7 @@ export class TasksService implements OnModuleInit {
     if (!job) return;
 
     job.start();
+
     this.ht_CronJobsService.update(
       { name: id },
       {

@@ -64,4 +64,16 @@ export class HT_CronJobsController {
       return ApiResponse.error('Update cron jobs failed!', 500, ex.message);
     }
   }
+
+  @Public()
+  @Post('delete')
+  async deleteCronJob(@Body('name') name: string) {
+    try {
+      const result = await this.ht_CronJobsService.delete({ name });
+
+      return ApiResponse.success('Delete cron jobs success!', result);
+    } catch (ex) {
+      return ApiResponse.error('Delete cron jobs failed!', 500, ex.message);
+    }
+  }
 }
