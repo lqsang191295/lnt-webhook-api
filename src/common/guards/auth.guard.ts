@@ -31,7 +31,7 @@ export class AuthGuard implements CanActivate {
     let token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      if (cookies) token = cookies.jwt;
+      if (cookies) token = cookies['authToken'];
     }
 
     if (!token) {
@@ -40,7 +40,6 @@ export class AuthGuard implements CanActivate {
 
     try {
       const JWT_SECRET = this.configService.get<string>('JWT_SECRET');
-      const JWT_EXPIRESIN = this.configService.get<string>('JWT_EXPIRESIN');
       const user = await this.jwtService.verifyAsync(token, {
         secret: JWT_SECRET,
       });

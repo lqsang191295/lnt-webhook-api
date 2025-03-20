@@ -30,7 +30,8 @@ async function bootstrap() {
   //   }),
   // );
   app.enableCors({
-    // credentials: true,
+    origin: 'http://localhost:3000', // Thay thế bằng domain frontend của bạn
+    credentials: true, // Quan trọng để cho phép cookie
   });
   app.use(cookieParser());
 

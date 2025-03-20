@@ -12,10 +12,7 @@ export class WebhookController {
   ) {}
 
   @Post()
-  async handleWebHook(
-    @Body() body: Record<string, unknown>,
-    @Res() res: Response,
-  ) {
+  async handleWebHook(@Body() body: Record<string, unknown>) {
     try {
       const { code, oaId } = body;
 

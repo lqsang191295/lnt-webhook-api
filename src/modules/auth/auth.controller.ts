@@ -3,8 +3,8 @@ import { HelperService } from 'src/modules/helper/helper.service';
 import { AuthService } from './auth.service';
 import { Public } from 'src/common/decorators/public.decorator';
 import { Response } from 'express';
-
-const { JWT_SECRET } = process.env;
+import { ApiResponse } from 'src/common/api/api-response';
+import { serialize } from 'cookie';
 
 @Controller('auth')
 export class AuthController {
@@ -20,11 +20,11 @@ export class AuthController {
     const codeChallenge =
       this.helperService.generateCodeChallenge(codeVerifier);
 
-    return {
+    return ApiResponse.success('Handle pkce success!', {
       code_verifier: codeVerifier,
       code_challenge: codeChallenge,
       method: 'S256', // OAuth PKCE uses 'S256' method
-    };
+    });
   }
 
   @Public()
@@ -37,18 +37,18 @@ export class AuthController {
     try {
       const jwt = await this.authService.signIn(username, password);
 
-      response.cookie('jwt', jwt, {
-        httpOnly: true, // 🔐 Bảo vệ cookie, ngăn JavaScript truy cập
+      response.cookie('authToken', jwt, {
+        httpOnly: false, // 🔐 Bảo vệ cookie, ngăn JavaScript truy cập
         secure: process.env.NODE_ENV === 'production', // 🔒 Chỉ gửi cookie qua HTTPS nếu ở production
         sameSite: 'strict', // 🛡️ Ngăn CSRF
         maxAge: 7 * 24 * 60 * 60 * 1000, // ⏳ 7 ngày (tính bằng milliseconds)
       });
 
-      return { jwt };
+      return ApiResponse.success('Handle JWT success!', {
+        jwt,
+      });
     } catch (error) {
-      return {
-        error,
-      };
+      return ApiResponse.error('Handle JWT failed!', 500, error.message);
     }
   }
 
