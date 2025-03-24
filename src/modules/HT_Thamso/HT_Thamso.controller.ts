@@ -2,6 +2,7 @@ import { Controller, Get, Logger, Post } from '@nestjs/common';
 import { HT_ThamsoService } from './HT_Thamso.service';
 import { Roles } from 'src/common/decorators/role.decorator';
 import { ApiResponse } from 'src/common/api/api-response';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('module/HT_Thamso')
 export class HT_ThamsoController {
@@ -17,6 +18,7 @@ export class HT_ThamsoController {
     return this.htThamSoService.findAll();
   }
 
+  @Public()
   @Get('zalo-token')
   async getZaloToken() {
     try {
@@ -30,14 +32,14 @@ export class HT_ThamsoController {
 
       if (!thamSoToken || !thamSoToken.length) {
         return ApiResponse.success('Get token success!', {
-          accessToken: '',
-          refreshToken: '',
+          access_token: '',
+          refresh_token: '',
         });
       }
 
       return ApiResponse.success('Get token success!', {
-        accessToken: thamSoToken[0].Thamso,
-        refreshToken: thamSoToken[1].Thamso,
+        access_token: thamSoToken[0].Thamso,
+        refresh_token: thamSoToken[1].Thamso,
       });
     } catch (ex) {
       return ApiResponse.error('Get token failed!', 500, ex.message);

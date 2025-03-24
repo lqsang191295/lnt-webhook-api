@@ -27,7 +27,7 @@ export class AppLogger implements LoggerService {
   }
 
   log(message: string) {
-    // this.logger.info(message);
+    this.logger.info(message);
   }
 
   error(message: string, trace?: string) {

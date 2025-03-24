@@ -47,15 +47,16 @@ export class WebhookController {
   }
 
   @Post('refresh-token')
-  async refreshToken(
-    @Body('refresh_token') refreshToken: string,
-    @Res() res: Response,
-  ) {
+  async refreshToken(@Body('refresh_token') refreshToken: string) {
     try {
       const data = await this.webhookService.refreshAccessToken(refreshToken);
 
       if ('error' in data) {
-        return res.status(HttpStatus.FAILED_DEPENDENCY).send({ ...data });
+        return ApiResponse.error(
+          'Refresh token failed!',
+          500,
+          data.error_reason,
+        );
       }
 
       await this.htThamSoService.saveToken(
