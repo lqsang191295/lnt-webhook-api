@@ -27,6 +27,17 @@ export class TasksHandlerService {
 
       if (!refreshToken) return;
 
+      const result = await this.webhookService.refreshAccessToken(refreshToken);
+
+      if ('error' in result) {
+        return;
+      }
+
+      await this.ht_ThamsoService.saveToken(
+        result.access_token,
+        result.refresh_token,
+      );
+
       this.ht_CronJobsService.update(
         { name },
         {
@@ -34,7 +45,6 @@ export class TasksHandlerService {
           updated_at: new Date(),
         },
       );
-      this.webhookService.refreshAccessToken(refreshToken);
     } catch (ex) {
       this.ht_CronJobsService.update(
         { name },
