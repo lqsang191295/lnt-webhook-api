@@ -30,56 +30,40 @@ export class TasksService implements OnModuleInit {
     }
   }
 
-  getHandlerFunction(funcName: string): (() => Promise<void>) | null {
-    const handlers: Record<string, () => Promise<void>> = {
-      handleCronZaloRefreshToken: () =>
-        this.tasksHandlerService.handleCronZaloRefreshToken(),
+  getHandlerFunction(
+    funcName: string,
+  ): ((name: string) => Promise<void>) | null {
+    const handlers: Record<string, (name: string) => Promise<void>> = {
+      handleCronZaloRefreshToken: (name: string) =>
+        this.tasksHandlerService.handleCronZaloRefreshToken(name),
     };
 
     return handlers[funcName] || null;
   }
 
   addCronJob(name: string, func: string, time: string, status: boolean) {
-    const handler = this.getHandlerFunction(func);
+    try {
+      const handler = this.getHandlerFunction(func);
 
-    if (!handler) {
-      return;
-    }
+      if (!handler) {
+        return;
+      }
 
-    const job = new CronJob(`${time}`, async () => {
-      await handler();
-    });
+      const job = new CronJob(`${time}`, async () => {
+        await handler(name);
+      });
 
-    this.schedulerRegistry.addCronJob(name, job);
+      this.schedulerRegistry.addCronJob(name, job);
 
-    if (status) {
-      job.start();
-    } else {
-      job.stop();
+      if (status) {
+        job.start();
+      } else {
+        job.stop();
+      }
+    } catch (ex) {
+      console.log('error addCronJob', ex);
     }
   }
-
-  // @Cron('10 * * * * *', {
-  //   name: 'zalo-refresh-token',
-  // })
-  // async handleCronZaloRefreshToken() {
-  //   console.log('aaaaaaaaaaaaaaaaaaa 45s');
-  //   try {
-  //     const data = await this.ht_ThamsoService.findById({
-  //       Ma: 'RefreshToken_Zalo',
-  //     });
-
-  //     if (!data || !data.length) return;
-
-  //     const refreshToken = data[0].Thamso;
-
-  //     if (!refreshToken) return;
-
-  //     this.webhookService.refreshAccessToken(refreshToken);
-  //   } catch (ex) {
-  //     this.logger.error(ex.message);
-  //   }
-  // }
 
   getAllCronJobs() {
     const cronJobs = this.schedulerRegistry.getCronJobs();

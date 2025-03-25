@@ -1,10 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryColumn,
-  UpdateDateColumn,
-  CreateDateColumn,
-} from 'typeorm';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity({
   name: 'HT_CronJobs',
@@ -21,4 +15,7 @@ export class HT_CronJobsEntity {
 
   @Column()
   status: boolean;
+
+  @Column()
+  updated_at: Date;
 }

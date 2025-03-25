@@ -33,6 +33,7 @@ export class HT_CronJobsController {
         func,
         time,
         status,
+        updated_at: new Date(),
       });
 
       return ApiResponse.success('Add cron jobs success!', result);
