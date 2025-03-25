@@ -17,5 +17,8 @@ export class HT_CronJobsEntity {
   status: boolean;
 
   @Column()
+  action_status: string;
+
+  @Column()
   updated_at: Date;
 }

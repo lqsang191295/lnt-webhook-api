@@ -30,12 +30,19 @@ export class TasksHandlerService {
       this.ht_CronJobsService.update(
         { name },
         {
+          action_status: 'success',
           updated_at: new Date(),
         },
       );
       this.webhookService.refreshAccessToken(refreshToken);
     } catch (ex) {
-      //
+      this.ht_CronJobsService.update(
+        { name },
+        {
+          action_status: 'fail',
+          updated_at: new Date(),
+        },
+      );
     }
   }
 }
