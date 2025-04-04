@@ -1,8 +1,7 @@
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Body, Controller, Post } from '@nestjs/common';
 import { WebhookService } from './webhook.service';
-import { HT_ThamsoService } from 'src/modules/HT_Thamso/HT_Thamso.service';
-import { ApiResponse } from 'src/common/api/api-response';
+import { HT_ThamsoService } from '../../modules/HT_Thamso/HT_Thamso.service';
+import { ApiResponse } from '../../common/api/api-response';
 
 @Controller('webhook')
 export class WebhookController {

@@ -1,10 +1,9 @@
 import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
-import { HelperService } from 'src/modules/helper/helper.service';
+import { HelperService } from '../../modules/helper/helper.service';
 import { AuthService } from './auth.service';
-import { Public } from 'src/common/decorators/public.decorator';
+import { Public } from '../../common/decorators/public.decorator';
 import { Response } from 'express';
-import { ApiResponse } from 'src/common/api/api-response';
-import { serialize } from 'cookie';
+import { ApiResponse } from '../../common/api/api-response';
 
 @Controller('auth')
 export class AuthController {

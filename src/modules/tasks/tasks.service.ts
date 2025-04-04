@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { SchedulerRegistry, Timeout } from '@nestjs/schedule';
-import { TypeJob } from 'src/common/types/task';
+import { TypeJob } from '../../common/types/task';
 import { HT_CronJobsService } from '../HT_CronJobs/HT_CronJobs.service';
 import { CronJob } from 'cron';
 import { TasksHandlerService } from './tasks-handler.service';

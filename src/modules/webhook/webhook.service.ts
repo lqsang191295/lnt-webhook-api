@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { TypeResponseZalo, TypeResponseZaloError } from 'src/common/types/zalo';
+import {
+  TypeResponseZalo,
+  TypeResponseZaloError,
+} from '../../common/types/zalo';
 
 @Injectable()
 export class WebhookService {

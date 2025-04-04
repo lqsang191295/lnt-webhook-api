@@ -1,8 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { PushNotificationService } from './push-notification.service';
 import axios from 'axios';
-import { ApiResponse } from 'src/common/api/api-response';
-import { Public } from 'src/common/decorators/public.decorator';
+import { ApiResponse } from '../../common/api/api-response';
+import { Public } from '../../common/decorators/public.decorator';
 
 @Controller('push-notification')
 export class PushNotificationController {

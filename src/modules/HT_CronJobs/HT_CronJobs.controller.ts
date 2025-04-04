@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Logger, Post } from '@nestjs/common';
-import { Public } from 'src/common/decorators/public.decorator';
+import { Public } from '../../common/decorators/public.decorator';
 import { HT_CronJobsService } from './HT_CronJobs.service';
-import { ApiResponse } from 'src/common/api/api-response';
+import { ApiResponse } from '../../common/api/api-response';
 
 @Controller('module/HT_CronJobs')
 export class HT_CronJobsController {
