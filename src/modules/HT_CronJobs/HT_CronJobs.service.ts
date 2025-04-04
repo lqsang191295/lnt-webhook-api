@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BaseRepository } from 'src/common/repository/base.repository';
+import { BaseRepository } from '../../common/repository/base.repository';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { HT_CronJobsEntity } from './HT_CronJobs.entity';
