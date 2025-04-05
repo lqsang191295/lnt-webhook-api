@@ -2,6 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { WebhookService } from './webhook.service';
 import { HT_ThamsoService } from '../../modules/HT_Thamso/HT_Thamso.service';
 import { ApiResponse } from '../../common/api/api-response';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('webhook')
 export class WebhookController {
@@ -45,6 +46,7 @@ export class WebhookController {
     }
   }
 
+  @Public()
   @Post('refresh-token')
   async refreshToken(@Body('refresh_token') refreshToken: string) {
     try {
