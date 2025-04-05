@@ -29,10 +29,13 @@ async function bootstrap() {
   //     credentials: true, // 🔥 Cho phép gửi & nhận cookie
   //   }),
   // );
-  app.enableCors({
-    origin: 'http://172.16.0.10:3004', // Thay thế bằng domain frontend của bạn
-    credentials: true, // Quan trọng để cho phép cookie
-  });
+  // app.enableCors({
+  //   origin: 'http://172.16.0.10:3004', // Thay thế bằng domain frontend của bạn
+  //   credentials: true, // Quan trọng để cho phép cookie
+  // });
+
+  app.enableCors();
+
   app.use(cookieParser());
 
   await app.listen(process.env.PORT ?? 3100);
