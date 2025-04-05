@@ -69,4 +69,9 @@ export class PushNotificationService {
       },
     );
   }
+
+  // Post token qua sendPushNotification -> sau đó user click vào accept device -> check jwt -> giải mã -> check user - password
+  async approveDevice() {}
+
+  async rejectDevice() {}
 }
