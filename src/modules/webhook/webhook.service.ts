@@ -56,7 +56,6 @@ export class WebhookService {
 
     try {
       const params = new URLSearchParams();
-      params.append('secret_key', this.zaloAppSecret);
       params.append('refresh_token', refreshToken);
       params.append('app_id', this.zaloAppId);
       params.append('grant_type', 'refresh_token');
@@ -64,8 +63,11 @@ export class WebhookService {
       const response = await axios.post(this.zaloUrlOauth, params, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
+          'secret_key': this.zaloAppSecret
         },
       });
+
+      console.log('response === ', response.data)
 
       return response.data;
     } catch (error) {
