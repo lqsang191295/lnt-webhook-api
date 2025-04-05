@@ -5,7 +5,7 @@ import * as path from 'path'; // Import path module
 
 const SERVICE_ACCOUNT_KEY_PATH = path.resolve(
   __dirname,
-  '../../config/lnt-push-notification-firebase-adminsdk-fbsvc-72cded296b.json',
+  '../../config/lnt-push-notification-firebase-adminsdk-fbsvc-492f1350d4.json',
 );
 
 const SCOPES = ['https://www.googleapis.com/auth/firebase.messaging'];
@@ -17,6 +17,7 @@ export class PushNotificationService {
   async getAccessToken() {
     return new Promise(function (resolve, reject) {
       const key = require(SERVICE_ACCOUNT_KEY_PATH); // Đọc file JSON service account
+      console.log('key ==== ', key);
       const jwtClient = new google.auth.JWT(
         key.client_email,
         undefined,
