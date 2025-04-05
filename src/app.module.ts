@@ -8,7 +8,6 @@ import { AuthService } from './modules/auth/auth.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HelperModule } from './modules/helper/helper.module';
-import { UserModule } from './modules/user/user.module';
 import { GuardModule } from './modules/guard/guard.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ModulesModule } from './modules/modules.module';
@@ -62,7 +61,6 @@ const jwtConfig = JwtModule.register({
     WebhookModule,
     AuthModule,
     HelperModule,
-    UserModule,
     ConfigModule,
     ModulesModule,
     ScheduleModule.forRoot(),
