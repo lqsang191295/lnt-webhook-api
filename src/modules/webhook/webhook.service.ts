@@ -52,8 +52,20 @@ export class WebhookService {
       grant_type: 'refresh_token',
     };
 
+    console.log('adsasd ', data, this.zaloUrlOauth)
+
     try {
-      const response = await axios.post(this.zaloUrlOauth, data);
+      const params = new URLSearchParams();
+      params.append('secret_key', this.zaloAppSecret);
+      params.append('refresh_token', refreshToken);
+      params.append('app_id', this.zaloAppId);
+      params.append('grant_type', 'refresh_token');
+
+      const response = await axios.post(this.zaloUrlOauth, params, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
 
       return response.data;
     } catch (error) {
