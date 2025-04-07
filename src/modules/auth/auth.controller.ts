@@ -47,23 +47,27 @@ export class AuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000, // ⏳ 7 ngày (tính bằng milliseconds)
       });
 
+      // Check main devices
       const adUserLogged =
         await this.ad_UserLoggedService.findMainDeviceByUsername(username);
 
+      // K co main device thi login
       if (!adUserLogged) {
         return ApiResponse.success('Handle JWT success!', {
           jwt,
         });
       }
 
-      this.pushNotificationService.sendPushNotification(
-        adUserLogged.TokenDevice,
-        'Yêu cầu đăng nhập',
-        'Một thiết bị mới đang yêu cầu truy cập tài khoản',
-      );
+      // // Send push notification cho main device
+      // await this.pushNotificationService.sendPushNotification(
+      //   { deviceToken: adUserLogged.TokenDevice, username, jwt },
+      //   'Yêu cầu đăng nhập',
+      //   'Một thiết bị mới đang yêu cầu truy cập tài khoản',
+      // );
 
       return ApiResponse.success('Handle JWT success!', {
         jwt,
+        waitAcceptDevice: true,
       });
     } catch (error) {
       return ApiResponse.error('Handle JWT failed!', 500, error.message);

@@ -15,4 +15,7 @@ export class AD_UserLoggedDto {
 
   @IsDate()
   create_at: Date;
+
+  @IsBoolean()
+  Accepted: boolean;
 }

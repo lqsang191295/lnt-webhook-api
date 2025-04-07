@@ -16,6 +16,9 @@ export class AD_UserLoggedEntity {
   @Column()
   IsMainDevice: boolean;
 
+  @Column()
+  Accepted: boolean;
+
   @Column({
     type: 'timestamp',
   })

@@ -36,20 +36,28 @@ export class PushNotificationService {
     });
   }
 
-  async sendPushNotification(deviceToken: any, title: string, body: string) {
+  async sendPushNotification(
+    data: {
+      deviceToken: string;
+      username: string;
+      jwt: string;
+    },
+    title: string,
+    body: string,
+  ) {
     const accessToken = await this.getAccessToken();
 
     return await axios.post(
       'https://fcm.googleapis.com/v1/projects/lnt-push-notification/messages:send',
       {
         message: {
-          token: deviceToken, // Chắc chắn rằng deviceToken là token hợp lệ
+          token: data.deviceToken, // Chắc chắn rằng deviceToken là token hợp lệ
           notification: {
             title,
             body,
           },
           data: {
-            click_action: 'http://localhost:3000/',
+            click_action: `http://localhost:3000/access-device?token=${data.jwt}&username=${data.username}`,
           },
         },
       },
