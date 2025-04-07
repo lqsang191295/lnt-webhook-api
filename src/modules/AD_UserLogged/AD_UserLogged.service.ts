@@ -12,7 +12,22 @@ export class AD_UserLoggedService extends BaseRepository<AD_UserLoggedEntity> {
   }
 
   async findOne(username: string): Promise<AD_UserLoggedDto | null> {
-    const data = this.findById([{ UserID: username }]);
+    const data = await this.findById([{ UserID: username }]);
+
+    if (!data) return null;
+
+    return data[0];
+  }
+
+  async findMainDeviceByUsername(
+    username: string,
+  ): Promise<AD_UserLoggedDto | null> {
+    const data = await this.findById([
+      { UserID: username },
+      { IsMainDevice: true },
+    ]);
+
+    console.log('data === ', data);
 
     if (!data) return null;
 

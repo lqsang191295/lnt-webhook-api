@@ -29,11 +29,15 @@ export class AD_UserLoggedController {
   }
 
   @Post('set-main-device')
-  async setMainDevice(@Body('TokenDevice') TokenDevice: string) {
+  async setMainDevice(
+    @Body('TokenDevice') TokenDevice: string,
+    @Body('UserID') UserID: string,
+  ) {
     try {
       const result = await this.ad_UserLoggedService.update(
         {
           TokenDevice: TokenDevice,
+          UserID: UserID,
         },
         {
           IsMainDevice: true,

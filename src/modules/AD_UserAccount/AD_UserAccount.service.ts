@@ -12,7 +12,7 @@ export class AD_UserAccountService extends BaseRepository<AD_UserAccountEntity> 
   }
 
   async findOne(username: string): Promise<AD_UserAccountDto | null> {
-    const data = this.findById([{ UserID: username }]);
+    const data = await this.findById([{ UserID: username }]);
 
     if (!data) return null;
 

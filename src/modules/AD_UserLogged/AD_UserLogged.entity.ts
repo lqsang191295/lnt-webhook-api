@@ -1,10 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryColumn,
-  UpdateDateColumn,
-  CreateDateColumn,
-} from 'typeorm';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity({
   name: 'AD_UserLogged',
@@ -16,12 +10,14 @@ export class AD_UserLoggedEntity {
   @Column()
   Device: string;
 
-  @Column()
+  @PrimaryColumn()
   TokenDevice: string;
 
   @Column()
   IsMainDevice: boolean;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @Column({
+    type: 'timestamp',
+  })
   create_at: Date;
 }

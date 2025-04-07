@@ -14,6 +14,8 @@ export class AuthService {
 
     const user = await this.ad_UserAccountService.findOne(username);
 
+    console.log('user === ', user);
+
     if (!user) {
       throw new UnauthorizedException();
     }
