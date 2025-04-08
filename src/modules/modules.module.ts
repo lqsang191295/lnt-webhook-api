@@ -6,6 +6,8 @@ import { AD_UserAccountModule } from './AD_UserAccount/AD_UserAccount.module';
 import { AD_UserLoggedModule } from './AD_UserLogged/AD_UserLogged.module';
 import { AD_UserAccountService } from './AD_UserAccount/AD_UserAccount.service';
 import { AD_UserLoggedService } from './AD_UserLogged/AD_UserLogged.service';
+import { NotificationModule } from './notification/notification.module';
+import { HT_ThongbaoModule } from './HT_Thongbao/HT_Thongbao.module';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { AD_UserLoggedService } from './AD_UserLogged/AD_UserLogged.service';
     TasksModule,
     AD_UserAccountModule,
     AD_UserLoggedModule,
+    HT_ThongbaoModule,
+    NotificationModule,
   ],
   providers: [HT_ThamsoService, AD_UserAccountService, AD_UserLoggedService],
   exports: [HT_ThamsoService, AD_UserAccountService, AD_UserLoggedService],

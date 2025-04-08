@@ -18,6 +18,7 @@ import { AD_UserAccountEntity } from './modules/AD_UserAccount/AD_UserAccount.en
 import { AD_UserLoggedEntity } from './modules/AD_UserLogged/AD_UserLogged.entity';
 import { PushNotificationModule } from './modules/push-notification/push-notification.module';
 import { PushNotificationService } from './modules/push-notification/push-notification.service';
+import { HT_ThongbaoEntity } from './modules/HT_Thongbao/HT_Thongbao.entity';
 
 console.log(' process.env.NODE_ENV === ', process.env.NODE_ENV);
 
@@ -49,6 +50,7 @@ const configSql = TypeOrmModule.forRoot({
   entities: [
     HT_ThamSoEntity,
     HT_CronJobsEntity,
+    HT_ThongbaoEntity,
     AD_UserAccountEntity,
     AD_UserLoggedEntity,
   ],

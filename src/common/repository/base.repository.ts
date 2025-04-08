@@ -5,7 +5,6 @@ import {
   ObjectLiteral,
   DeepPartial,
 } from 'typeorm';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 export class BaseRepository<T extends ObjectLiteral> {
   private repository: Repository<T>;

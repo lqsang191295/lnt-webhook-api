@@ -7,7 +7,6 @@ import { ApiResponse } from '../../common/api/api-response';
 export class HT_CronJobsController {
   constructor(private readonly ht_CronJobsService: HT_CronJobsService) {}
 
-  @Public()
   @Get('all')
   async getAllCronJobs() {
     try {
@@ -19,7 +18,6 @@ export class HT_CronJobsController {
     }
   }
 
-  @Public()
   @Post('add')
   async addCronJob(
     @Body('name') name: string,
@@ -42,7 +40,6 @@ export class HT_CronJobsController {
     }
   }
 
-  @Public()
   @Post('update')
   async updateCronJob(
     @Body('name') name: string,
@@ -66,7 +63,6 @@ export class HT_CronJobsController {
     }
   }
 
-  @Public()
   @Post('delete')
   async deleteCronJob(@Body('name') name: string) {
     try {
