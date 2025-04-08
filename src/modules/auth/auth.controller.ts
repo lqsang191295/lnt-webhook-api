@@ -183,7 +183,7 @@ export class AuthController {
       }
 
       await this.ad_UserLoggedService.update(
-        [{ UserID: username }, { TokenDevice: deviceToken }],
+        { UserID: username, TokenDevice: deviceToken },
         {
           Accepted: false,
         },
