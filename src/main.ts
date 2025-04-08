@@ -9,9 +9,9 @@ import { AppLogger } from './common/app/app-logger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: [],
+    // logger: [],
   });
-  const logger = new AppLogger();
+  // const logger = new AppLogger();
   const config = new DocumentBuilder()
     .setTitle('Cats example')
     .setDescription('The cats API description')
@@ -22,19 +22,17 @@ async function bootstrap() {
 
   SwaggerModule.setup('api', app, documentFactory);
 
-  app.useLogger(logger);
+  // app.useLogger(logger);
   // app.use(
   //   cors({
   //     origin: 'http://localhost:3000', // 🔥 Phải trùng với FE
   //     credentials: true, // 🔥 Cho phép gửi & nhận cookie
   //   }),
   // );
-  // app.enableCors({
-  //   origin: 'http://172.16.0.10:3004', // Thay thế bằng domain frontend của bạn
-  //   credentials: true, // Quan trọng để cho phép cookie
-  // });
-
-  app.enableCors();
+  app.enableCors({
+    origin: ['http://localhost:3000', 'http://172.16.0.10:3004'], // Thay thế bằng domain frontend của bạn
+    credentials: true, // Quan trọng để cho phép cookie
+  });
 
   app.use(cookieParser());
 

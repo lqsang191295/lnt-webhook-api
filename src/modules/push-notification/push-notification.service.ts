@@ -17,7 +17,6 @@ export class PushNotificationService {
   async getAccessToken() {
     return new Promise(function (resolve, reject) {
       const key = require(SERVICE_ACCOUNT_KEY_PATH); // Đọc file JSON service account
-      console.log('key ==== ', key);
       const jwtClient = new google.auth.JWT(
         key.client_email,
         undefined,
@@ -37,27 +36,29 @@ export class PushNotificationService {
     });
   }
 
-  async sendPushNotification(deviceToken: any, title: string, body: string) {
+  async sendPushNotification(
+    data: {
+      mainDeviceToken: string;
+      deviceToken: string;
+      username: string;
+      jwt: string;
+    },
+    title: string,
+    body: string,
+  ) {
     const accessToken = await this.getAccessToken();
-    console.log('accessToken === ', accessToken, {
-      to: deviceToken,
-      notification: {
-        title,
-        body,
-      },
-    });
 
     return await axios.post(
       'https://fcm.googleapis.com/v1/projects/lnt-push-notification/messages:send',
       {
         message: {
-          token: deviceToken, // Chắc chắn rằng deviceToken là token hợp lệ
+          token: data.mainDeviceToken, // Chắc chắn rằng deviceToken là token hợp lệ
           notification: {
-            title: 'Yêu cầu đăng nhập',
-            body: 'Một thiết bị mới đang yêu cầu truy cập tài khoản',
+            title,
+            body,
           },
           data: {
-            click_action: 'http://webhook.bvlengoctung.com:3004/',
+            click_action: `http://localhost:3000/access-device?token=${data.jwt}&username=${data.username}&deviceToken=${data.deviceToken}`,
           },
         },
       },
@@ -69,9 +70,4 @@ export class PushNotificationService {
       },
     );
   }
-
-  // Post token qua sendPushNotification -> sau đó user click vào accept device -> check jwt -> giải mã -> check user - password
-  async approveDevice() {}
-
-  async rejectDevice() {}
 }
