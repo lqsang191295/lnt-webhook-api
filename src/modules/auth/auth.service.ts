@@ -33,4 +33,16 @@ export class AuthService {
 
     return await this.jwtService.signAsync(payload);
   }
+
+  async validateToken(token: string) {
+    try {
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: process.env.JWT_SECRET, // secret dùng để sign token lúc tạo
+      });
+      return payload; // Trả về thông tin trong token nếu hợp lệ
+    } catch (error) {
+      console.error('Invalid token:', error);
+      return null; // Token invalid hoặc expired
+    }
+  }
 }

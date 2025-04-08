@@ -38,6 +38,7 @@ export class PushNotificationService {
 
   async sendPushNotification(
     data: {
+      mainDeviceToken: string;
       deviceToken: string;
       username: string;
       jwt: string;
@@ -51,13 +52,13 @@ export class PushNotificationService {
       'https://fcm.googleapis.com/v1/projects/lnt-push-notification/messages:send',
       {
         message: {
-          token: data.deviceToken, // Chắc chắn rằng deviceToken là token hợp lệ
+          token: data.mainDeviceToken, // Chắc chắn rằng deviceToken là token hợp lệ
           notification: {
             title,
             body,
           },
           data: {
-            click_action: `http://localhost:3000/access-device?token=${data.jwt}&username=${data.username}`,
+            click_action: `http://localhost:3000/access-device?token=${data.jwt}&username=${data.username}&deviceToken=${data.deviceToken}`,
           },
         },
       },
@@ -69,9 +70,4 @@ export class PushNotificationService {
       },
     );
   }
-
-  // Post token qua sendPushNotification -> sau đó user click vào accept device -> check jwt -> giải mã -> check user - password
-  async approveDevice() {}
-
-  async rejectDevice() {}
 }

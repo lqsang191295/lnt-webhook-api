@@ -9,6 +9,7 @@ export class AD_UserLoggedController {
 
   constructor(private readonly ad_UserLoggedService: AD_UserLoggedService) {}
 
+  @Public()
   @Post('add')
   async addUserlogged(
     @Body('UserID') UserID: string,

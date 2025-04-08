@@ -25,7 +25,6 @@ export class AD_UserLoggedService extends BaseRepository<AD_UserLoggedEntity> {
     const data = await this.findById([
       { UserID: username },
       { IsMainDevice: true },
-      { Accepted: false },
     ]);
 
     console.log('data === ', data);

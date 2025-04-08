@@ -28,8 +28,11 @@ export class BaseRepository<T extends ObjectLiteral> {
     return this.repository.findOne({ where: data as T }) as Promise<T>;
   }
 
-  async update(id: Partial<T>, data: Partial<T>): Promise<T | null> {
-    await this.repository.update(id, data);
+  async update(
+    id: Partial<T> | Partial<T>[],
+    data: Partial<T>,
+  ): Promise<T | null> {
+    await this.repository.update(id as any, data);
     return data as T;
   }
 
