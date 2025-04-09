@@ -1,5 +1,5 @@
-import { Controller, Get, Sse } from '@nestjs/common';
-import { Observable, interval, map } from 'rxjs';
+import { Controller, Sse } from '@nestjs/common';
+import { Observable, interval, map, merge } from 'rxjs';
 import { dbChangeSubject } from 'src/event-stream';
 
 interface ServerSentEvent<T = any> {
@@ -13,8 +13,12 @@ interface ServerSentEvent<T = any> {
 export class NotificationController {
   @Sse('sse')
   sendNotifications(): Observable<ServerSentEvent> {
-    return dbChangeSubject.pipe(
-      map((data) => ({ data }))
+    const ping$ = interval(25000).pipe(
+      map(() => ({ data: ':ping' })), // mỗi 25s gửi comment ":ping"
     );
+
+    const data$ = dbChangeSubject.pipe(map((data) => ({ data })));
+
+    return merge(ping$, data$); // kết hợp cả 2 luồng
   }
 }
