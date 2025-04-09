@@ -1,4 +1,5 @@
-import { Controller, Sse } from '@nestjs/common';
+import { Controller, Res, Sse } from '@nestjs/common';
+import { Response } from 'express';
 import { Observable, interval, map, merge } from 'rxjs';
 import { dbChangeSubject } from 'src/event-stream';
 
@@ -12,13 +13,22 @@ interface ServerSentEvent<T = any> {
 @Controller('notification')
 export class NotificationController {
   @Sse('sse')
-  sendNotifications(): Observable<ServerSentEvent> {
+  sendNotifications(@Res({ passthrough: true }) res: Response): Observable<ServerSentEvent> {
+    res.set({
+      'Cache-Control': 'no-cache',
+      'Content-Type': 'text/event-stream',
+      'Connection': 'keep-alive',
+      'X-Accel-Buffering': 'no', // để nginx không buffer
+    });
+
     const ping$ = interval(25000).pipe(
-      map(() => ({ data: ':ping' })), // mỗi 25s gửi comment ":ping"
+      map(() => ({ data: ':ping\n\n' })),
     );
 
-    const data$ = dbChangeSubject.pipe(map((data) => ({ data })));
+    const data$ = dbChangeSubject.pipe(
+      map((data) => ({ data: JSON.stringify(data) + '\n\n' })),
+    );
 
-    return merge(ping$, data$); // kết hợp cả 2 luồng
+    return merge(ping$, data$);
   }
 }
