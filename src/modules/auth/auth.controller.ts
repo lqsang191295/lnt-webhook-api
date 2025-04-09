@@ -53,11 +53,6 @@ export class AuthController {
         { UserID: username },
       ]);
 
-      console.log('adUserLogged 11111111111 === ', adUserLogged, {
-        username,
-        deviceToken,
-      });
-
       // K co main device thi login
       if (!adUserLogged || !adUserLogged.length) {
         return ApiResponse.success('Handle JWT success!', {
@@ -69,8 +64,6 @@ export class AuthController {
         return item.IsMainDevice;
       });
 
-      console.log('isMainDevice === ', isMainDevice);
-
       if (!isMainDevice) {
         return ApiResponse.success('Handle JWT success!', {
           jwt,
@@ -80,8 +73,6 @@ export class AuthController {
       const isDeviceAccepted = adUserLogged.find((item) => {
         return item.Accepted && item.TokenDevice === deviceToken;
       });
-
-      console.log('isDeviceAccepted === ', isDeviceAccepted);
 
       if (isDeviceAccepted) {
         return ApiResponse.success('Handle JWT success!', {

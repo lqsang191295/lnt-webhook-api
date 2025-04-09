@@ -27,8 +27,6 @@ export class AD_UserLoggedService extends BaseRepository<AD_UserLoggedEntity> {
       { IsMainDevice: true },
     ]);
 
-    console.log('data === ', data);
-
     if (!data) return null;
 
     return data[0];

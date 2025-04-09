@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AD_UserAccountService } from '../AD_UserAccount/AD_UserAccount.service';
+import HISCrypto from 'src/common/crypto/HISCrypto';
 
 @Injectable()
 export class AuthService {
@@ -14,13 +15,13 @@ export class AuthService {
 
     const user = await this.ad_UserAccountService.findOne(username);
 
-    console.log('user === ', user);
-
     if (!user) {
       throw new UnauthorizedException();
     }
 
-    if (user.Password !== password) {
+    console.log('user === ', user, HISCrypto.decrypt(user.Password));
+
+    if (HISCrypto.decrypt(user.Password) !== password) {
       throw new UnauthorizedException();
     }
 

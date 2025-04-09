@@ -16,9 +16,6 @@ export class WebhookController {
     try {
       const { code, oaId } = body;
 
-      console.log('Code:', code);
-      console.log('OA_ID:', oaId);
-
       if (code && oaId) {
         const data = await this.webhookService.getAccessToken(code as string);
 
