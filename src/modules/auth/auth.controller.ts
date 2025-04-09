@@ -70,9 +70,13 @@ export class AuthController {
         });
       }
 
-      const isDeviceAccepted = adUserLogged.find((item) => {
-        return item.Accepted && item.TokenDevice === deviceToken;
-      });
+      console.log('adUserLogged === ', adUserLogged, deviceToken);
+
+      const isDeviceAccepted = adUserLogged.find(
+        (item) =>
+          item.TokenDevice === deviceToken &&
+          (item.Accepted || item.IsMainDevice),
+      );
 
       if (isDeviceAccepted) {
         return ApiResponse.success('Handle JWT success!', {
