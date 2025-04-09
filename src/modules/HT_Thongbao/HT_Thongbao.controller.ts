@@ -12,8 +12,11 @@ export class HT_ThongbaoController {
   async getThongBao() {
     try {
       const result = await this.ht_ThongbaoService.findAll();
+      const sorted = result.sort((a, b) =>
+        a.created_at > b.created_at ? -1 : 1,
+      );
 
-      return ApiResponse.success('Get thong bao success!', result);
+      return ApiResponse.success('Get thong bao success!', sorted);
     } catch (ex) {
       return ApiResponse.error('Get thong bao failed!', 500, ex.message);
     }
