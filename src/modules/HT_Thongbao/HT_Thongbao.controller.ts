@@ -8,6 +8,17 @@ export class HT_ThongbaoController {
 
   constructor(private readonly ht_ThongbaoService: HT_ThongbaoService) {}
 
+  @Get('all')
+  async getThongBao() {
+    try {
+      const result = await this.ht_ThongbaoService.findAll();
+
+      return ApiResponse.success('Get thong bao success!', result);
+    } catch (ex) {
+      return ApiResponse.error('Get thong bao failed!', 500, ex.message);
+    }
+  }
+
   @Post('add')
   async addThongBao(
     @Body('name') name: string,
@@ -21,6 +32,38 @@ export class HT_ThongbaoController {
       return ApiResponse.success('Add thong bao success!', result);
     } catch (ex) {
       return ApiResponse.error('Add thong bao failed!', 500, ex.message);
+    }
+  }
+
+  @Post('read')
+  async readThongBao(@Body('id') id: number) {
+    try {
+      const result = await this.ht_ThongbaoService.update(
+        { id },
+        {
+          readed: true,
+        },
+      );
+
+      return ApiResponse.success('Update thong bao success!', result);
+    } catch (ex) {
+      return ApiResponse.error('Update thong bao failed!', 500, ex.message);
+    }
+  }
+
+  @Post('unread')
+  async unreadThongBao(@Body('id') id: number) {
+    try {
+      const result = await this.ht_ThongbaoService.update(
+        { id },
+        {
+          readed: false,
+        },
+      );
+
+      return ApiResponse.success('Update thong bao success!', result);
+    } catch (ex) {
+      return ApiResponse.error('Update thong bao failed!', 500, ex.message);
     }
   }
 }

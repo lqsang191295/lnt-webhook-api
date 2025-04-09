@@ -13,6 +13,9 @@ export class HT_ThongbaoEntity {
   @Column()
   description: string;
 
+  @Column()
+  readed: boolean;
+
   @Column({
     type: 'timestamp',
   })
