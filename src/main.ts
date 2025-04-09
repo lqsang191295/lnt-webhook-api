@@ -31,6 +31,7 @@ async function bootstrap() {
   app.enableCors({
     origin: ['http://localhost:3000', 'http://172.16.0.10:3004'], // Thay thế bằng domain frontend của bạn
     credentials: true, // Quan trọng để cho phép cookie
+    allowedHeaders: ['Authorization', 'Content-Type'],
   });
 
   app.use(cookieParser());
