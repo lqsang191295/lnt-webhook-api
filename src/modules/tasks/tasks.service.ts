@@ -16,8 +16,12 @@ export class TasksService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
+    this.logger.log(`TasksService run onModuleInit at ${new Date()}`)
     try {
       const cronJobs = await this.ht_CronJobsService.findAll();
+
+      console.log('cronJobs === ', cronJobs)
+      this.logger.log(`TasksService cronJobs at ${cronJobs} --- ${cronJobs?.length}`)
 
       if (!cronJobs || !cronJobs.length) return;
 
