@@ -53,7 +53,7 @@ export class WebhookController {
         return ApiResponse.error(
           'Refresh token failed!',
           500,
-          data.error_reason,
+          data.error_description,
         );
       }
 
