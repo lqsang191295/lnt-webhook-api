@@ -19,6 +19,8 @@ import { AD_UserLoggedEntity } from './modules/AD_UserLogged/AD_UserLogged.entit
 import { PushNotificationModule } from './modules/push-notification/push-notification.module';
 import { PushNotificationService } from './modules/push-notification/push-notification.service';
 import { HT_ThongbaoEntity } from './modules/HT_Thongbao/HT_Thongbao.entity';
+import { BV_QLyCapTheEntity } from './modules/BV_QLyCapThe/BV_QLyCapThe.entity';
+import { BV_PhieuChidinhDVCTEntity } from './modules/BV_PhieuChidinhDVCT/BV_PhieuChidinhDVCT.entity';
 
 console.log(' process.env.NODE_ENV === ', process.env.NODE_ENV);
 
@@ -37,6 +39,15 @@ const {
   JWT_EXPIRESIN,
 } = process.env;
 
+console.log({
+  DB_HOST,
+  DB_USERNAME,
+  DB_PASSWORD,
+  DB_NAME,
+  JWT_SECRET,
+  JWT_EXPIRESIN,
+})
+
 const configSql = TypeOrmModule.forRoot({
   type: 'mssql',
   host: DB_HOST,
@@ -53,6 +64,8 @@ const configSql = TypeOrmModule.forRoot({
     HT_ThongbaoEntity,
     AD_UserAccountEntity,
     AD_UserLoggedEntity,
+    BV_QLyCapTheEntity,
+    BV_PhieuChidinhDVCTEntity,
   ],
   synchronize: false,
 });

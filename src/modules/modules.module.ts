@@ -8,6 +8,9 @@ import { AD_UserAccountService } from './AD_UserAccount/AD_UserAccount.service';
 import { AD_UserLoggedService } from './AD_UserLogged/AD_UserLogged.service';
 import { NotificationModule } from './notification/notification.module';
 import { HT_ThongbaoModule } from './HT_Thongbao/HT_Thongbao.module';
+import { PacsModule } from './pacs/pacs.module';
+import { BV_QLyCapTheService } from './BV_QLyCapThe/BV_QLyCapThe.service';
+import { BV_QLyCapTheModule } from './BV_QLyCapThe/BV_QLyCapThe.module';
 
 @Module({
   imports: [
@@ -16,9 +19,11 @@ import { HT_ThongbaoModule } from './HT_Thongbao/HT_Thongbao.module';
     AD_UserAccountModule,
     AD_UserLoggedModule,
     HT_ThongbaoModule,
+    BV_QLyCapTheModule,
     NotificationModule,
+    PacsModule,
   ],
-  providers: [HT_ThamsoService, AD_UserAccountService, AD_UserLoggedService],
-  exports: [HT_ThamsoService, AD_UserAccountService, AD_UserLoggedService],
+  providers: [HT_ThamsoService, AD_UserAccountService, AD_UserLoggedService, BV_QLyCapTheService],
+  exports: [HT_ThamsoService, AD_UserAccountService, AD_UserLoggedService, BV_QLyCapTheService],
 })
 export class ModulesModule {}
