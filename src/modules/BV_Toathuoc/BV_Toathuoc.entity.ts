@@ -1,24 +1,18 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, PrimaryColumn } from 'typeorm';
 
 @Entity({
   name: 'BV_Toathuoc',
 })
 export class BV_ToathuocEntity {
-  @PrimaryGeneratedColumn()
-  Ma: string;
-  
-  @Column()
-  Hoten: string;
+  @PrimaryColumn()
+  ID: string;
 
   @Column()
-  Diachi: string;
+  Ngay: Date;
 
   @Column()
-  Ngaysinh: string;
+  MaBN: string;
 
   @Column()
-  Thangsinh: string;
-
-  @Column()
-  Namsinh: string;
+  ImageName: string;
 }

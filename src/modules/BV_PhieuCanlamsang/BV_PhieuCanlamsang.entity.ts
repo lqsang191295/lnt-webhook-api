@@ -1,24 +1,21 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, PrimaryColumn } from 'typeorm';
 
 @Entity({
   name: 'BV_PhieuCanlamsang',
 })
 export class BV_PhieuCanlamsangEntity {
-  @PrimaryGeneratedColumn()
-  Ma: string;
-  
-  @Column()
-  Hoten: string;
+  @PrimaryColumn()
+  ID: string;
 
   @Column()
-  Diachi: string;
+  Ngay: Date;
 
   @Column()
-  Ngaysinh: string;
+  MaBN: string;
 
   @Column()
-  Thangsinh: string;
+  ImageName: string;
 
   @Column()
-  Namsinh: string;
+  Phanloai: string;
 }

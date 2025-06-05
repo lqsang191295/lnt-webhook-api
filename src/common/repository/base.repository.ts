@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 export class BaseRepository<T extends ObjectLiteral> {
-  private repository: Repository<T>;
+  public repository: Repository<T>;
 
   constructor(dataSource: DataSource, entity: EntityTarget<T>) {
     this.repository = dataSource.getRepository(entity);
@@ -17,8 +17,16 @@ export class BaseRepository<T extends ObjectLiteral> {
     return this.repository.find();
   }
 
-  async findById(payload: Partial<T> | Partial<T>[]): Promise<T[] | null> {
-    return this.repository.find({ where: payload } as any);
+  async findById(payload: Partial<T> | Partial<T>[], select?: (keyof T)[]): Promise<T[] | null> {
+    return this.repository.find({ where: payload, select: select as (keyof T)[] | undefined, } as any);
+  }
+
+  async findOneById(payload: Partial<T> | Partial<T>[], select?: (keyof T)[]): Promise<T | null> {
+    const data = await this.repository.find({ where: payload, select: select as (keyof T)[] | undefined, } as any);
+
+    if (!data || !data.length) return null;
+
+    return data[0];
   }
 
   async create(data: DeepPartial<T>): Promise<T> {

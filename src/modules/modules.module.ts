@@ -11,6 +11,7 @@ import { HT_ThongbaoModule } from './HT_Thongbao/HT_Thongbao.module';
 import { PacsModule } from './pacs/pacs.module';
 import { BV_QLyCapTheService } from './BV_QLyCapThe/BV_QLyCapThe.service';
 import { BV_QLyCapTheModule } from './BV_QLyCapThe/BV_QLyCapThe.module';
+import { HisModule } from './his/his.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { BV_QLyCapTheModule } from './BV_QLyCapThe/BV_QLyCapThe.module';
     BV_QLyCapTheModule,
     NotificationModule,
     PacsModule,
+    HisModule,
   ],
   providers: [HT_ThamsoService, AD_UserAccountService, AD_UserLoggedService, BV_QLyCapTheService],
   exports: [HT_ThamsoService, AD_UserAccountService, AD_UserLoggedService, BV_QLyCapTheService],
