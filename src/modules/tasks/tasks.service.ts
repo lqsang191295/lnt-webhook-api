@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { SchedulerRegistry, Timeout } from '@nestjs/schedule';
-import { TypeJob } from 'src/common/types/task';
+import { TypeJob } from '../../common/types/task';
 import { HT_CronJobsService } from '../HT_CronJobs/HT_CronJobs.service';
 import { CronJob } from 'cron';
 import { TasksHandlerService } from './tasks-handler.service';
@@ -16,13 +16,19 @@ export class TasksService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
+    this.logger.log(`TasksService run onModuleInit at ${new Date()}`)
     try {
       const cronJobs = await this.ht_CronJobsService.findAll();
+
+      console.log('cronJobs === ', cronJobs)
+      this.logger.log(`TasksService cronJobs at ${cronJobs} --- ${cronJobs?.length}`)
 
       if (!cronJobs || !cronJobs.length) return;
 
       for (let i = 0; i < cronJobs.length; i++) {
         const { name, func, time, status } = cronJobs[i];
+        this.logger.log(`TasksService cronJobs 1111 at ${name} --- ${func} --- ${time} --- ${status}`)
+
         this.addCronJob(name, func, time, status);
       }
     } catch (error) {
@@ -49,9 +55,12 @@ export class TasksService implements OnModuleInit {
         return;
       }
 
+      this.logger.log(`TasksService cronJobs 2222 at ${handler}`)
+
       const job = new CronJob(`${time}`, async () => {
         await handler(name);
       });
+
 
       this.schedulerRegistry.addCronJob(name, job);
 
@@ -61,6 +70,7 @@ export class TasksService implements OnModuleInit {
         job.stop();
       }
     } catch (ex) {
+      this.logger.log(`addCronJob failed at ${name} error: ${ex.message}`)
       console.log('error addCronJob', ex);
     }
   }
@@ -97,6 +107,8 @@ export class TasksService implements OnModuleInit {
   stopJobById(id: string) {
     const job = this.getJobById(id);
 
+    this.logger.log('Stop job by id ', job)
+
     if (!job) return;
 
     job.stop();
@@ -111,12 +123,47 @@ export class TasksService implements OnModuleInit {
     return;
   }
 
-  startJobById(id: string) {
+  async startJobById(id: string) {
     const job = this.getJobById(id);
 
-    if (!job) return;
+    this.logger.log(`'Start job by id ${id} 111 aaa', ${!job}, 'bbb', ${job?.running}`)
 
-    job.start();
+
+    // if (!job) {
+    //   const cronJobs = await this.ht_CronJobsService.findById({
+    //     name: id
+    //   });
+
+    //   this.logger.log('Start job by id  cronJobs', cronJobs)
+
+    //   if (!cronJobs || !cronJobs.length) return;
+
+    //   for (let i = 0; i < cronJobs.length; i++) {
+    //     const { name, func, time, status } = cronJobs[i];
+    //     this.logger.log('Start job by id cronJobs name', name, func, time, status)
+    //     this.addCronJob(name, func, time, status);
+    //   }
+
+    //   return;
+    // }
+
+    if(job) {
+      this.schedulerRegistry.deleteCronJob(id);
+    }
+
+    const cronJobs = await this.ht_CronJobsService.findById({
+      name: id
+    });
+
+    this.logger.log('Start job by id  cronJobs', cronJobs)
+
+    if (!cronJobs || !cronJobs.length) return;
+
+    for (let i = 0; i < cronJobs.length; i++) {
+      const { name, func, time, status } = cronJobs[i];
+      this.logger.log('Start job by id cronJobs name', name, func, time, status)
+      this.addCronJob(name, func, time, true);
+    }
 
     this.ht_CronJobsService.update(
       { name: id },

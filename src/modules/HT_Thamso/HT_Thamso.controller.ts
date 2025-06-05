@@ -1,8 +1,8 @@
 import { Controller, Get, Logger, Post } from '@nestjs/common';
 import { HT_ThamsoService } from './HT_Thamso.service';
-import { Roles } from 'src/common/decorators/role.decorator';
-import { ApiResponse } from 'src/common/api/api-response';
-import { Public } from 'src/common/decorators/public.decorator';
+import { Roles } from '../../common/decorators/role.decorator';
+import { ApiResponse } from '../../common/api/api-response';
+import { Public } from '../../common/decorators/public.decorator';
 
 @Controller('module/HT_Thamso')
 export class HT_ThamsoController {

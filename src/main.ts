@@ -5,7 +5,6 @@ import * as cors from 'cors';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import { AppLogger } from './common/app/app-logger';
-// import { ConsoleLogger } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -30,9 +29,18 @@ async function bootstrap() {
   //   }),
   // );
   app.enableCors({
-    origin: 'http://localhost:3000', // Thay thế bằng domain frontend của bạn
+    origin: ['http://localhost:3000', 'http://172.16.0.10:3004'], // Thay thế bằng domain frontend của bạn
     credentials: true, // Quan trọng để cho phép cookie
+    exposedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Cache-Control',
+      'X-Accel-Buffering',
+      'Connection',
+    ], // expose mấy header SSE
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
+
   app.use(cookieParser());
 
   await app.listen(process.env.PORT ?? 3100);

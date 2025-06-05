@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Logger, Post } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { Public } from 'src/common/decorators/public.decorator';
-import { ApiResponse } from 'src/common/api/api-response';
+import { Public } from '../../common/decorators/public.decorator';
+import { ApiResponse } from '../../common/api/api-response';
 
 @Controller('tasks')
 export class TasksController {

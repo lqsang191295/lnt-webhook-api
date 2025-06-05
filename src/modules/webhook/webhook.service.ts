@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { TypeResponseZalo, TypeResponseZaloError } from 'src/common/types/zalo';
+import {
+  TypeResponseZalo,
+  TypeResponseZaloError,
+} from '../../common/types/zalo';
 
 @Injectable()
 export class WebhookService {
@@ -50,7 +53,17 @@ export class WebhookService {
     };
 
     try {
-      const response = await axios.post(this.zaloUrlOauth, data);
+      const params = new URLSearchParams();
+      params.append('refresh_token', refreshToken);
+      params.append('app_id', this.zaloAppId);
+      params.append('grant_type', 'refresh_token');
+
+      const response = await axios.post(this.zaloUrlOauth, params, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          secret_key: this.zaloAppSecret,
+        },
+      });
 
       return response.data;
     } catch (error) {

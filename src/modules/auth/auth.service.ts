@@ -1,29 +1,49 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/modules/user/user.service';
+import { AD_UserAccountService } from '../AD_UserAccount/AD_UserAccount.service';
+import HISCrypto from 'src/common/crypto/HISCrypto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usersService: UserService,
     private readonly jwtService: JwtService,
+    private readonly ad_UserAccountService: AD_UserAccountService,
   ) {}
 
   async signIn(username: string, password: string) {
     if (!username || !password) throw new UnauthorizedException();
 
-    const user = await this.usersService.findOne(username);
+    const user = await this.ad_UserAccountService.findOne(username);
 
-    if (user?.password !== password) {
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    console.log('user === ', user, HISCrypto.decrypt(user.Password));
+
+    if (HISCrypto.decrypt(user.Password) !== password) {
       throw new UnauthorizedException();
     }
 
     const payload = {
-      username: user.username,
-      sub: user.userId,
-      roles: user.roles,
+      username: user.UserID,
+      userId: user.UserID,
+      roles: user.Description,
+      empId: user.EmpID,
     };
 
     return await this.jwtService.signAsync(payload);
+  }
+
+  async validateToken(token: string) {
+    try {
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: process.env.JWT_SECRET, // secret dùng để sign token lúc tạo
+      });
+      return payload; // Trả về thông tin trong token nếu hợp lệ
+    } catch (error) {
+      console.error('Invalid token:', error);
+      return null; // Token invalid hoặc expired
+    }
   }
 }

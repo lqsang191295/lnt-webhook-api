@@ -30,6 +30,13 @@ export class TasksHandlerService {
       const result = await this.webhookService.refreshAccessToken(refreshToken);
 
       if ('error' in result) {
+        this.ht_CronJobsService.update(
+          { name },
+          {
+            action_status: 'fail',
+            updated_at: new Date(),
+          },
+        );
         return;
       }
 

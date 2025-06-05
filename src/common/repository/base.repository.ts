@@ -16,17 +16,22 @@ export class BaseRepository<T extends ObjectLiteral> {
   async findAll(): Promise<T[]> {
     return this.repository.find();
   }
+
   async findById(payload: Partial<T> | Partial<T>[]): Promise<T[] | null> {
     return this.repository.find({ where: payload } as any);
   }
 
   async create(data: DeepPartial<T>): Promise<T> {
-    const entity = this.repository.create(data);
-    return this.repository.save(entity);
+    await this.repository.insert(data as T);
+
+    return this.repository.findOne({ where: data as T }) as Promise<T>;
   }
 
-  async update(id: Partial<T>, data: Partial<T>): Promise<T | null> {
-    await this.repository.update(id, data);
+  async update(
+    id: Partial<T> | Partial<T>[],
+    data: Partial<T>,
+  ): Promise<T | null> {
+    await this.repository.update(id as any, data);
     return data as T;
   }
 

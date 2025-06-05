@@ -1,8 +1,8 @@
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Body, Controller, Post } from '@nestjs/common';
 import { WebhookService } from './webhook.service';
-import { HT_ThamsoService } from 'src/modules/HT_Thamso/HT_Thamso.service';
-import { ApiResponse } from 'src/common/api/api-response';
+import { HT_ThamsoService } from '../../modules/HT_Thamso/HT_Thamso.service';
+import { ApiResponse } from '../../common/api/api-response';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('webhook')
 export class WebhookController {
@@ -15,9 +15,6 @@ export class WebhookController {
   async handleWebHook(@Body() body: Record<string, unknown>) {
     try {
       const { code, oaId } = body;
-
-      console.log('Code:', code);
-      console.log('OA_ID:', oaId);
 
       if (code && oaId) {
         const data = await this.webhookService.getAccessToken(code as string);
@@ -46,6 +43,7 @@ export class WebhookController {
     }
   }
 
+  @Public()
   @Post('refresh-token')
   async refreshToken(@Body('refresh_token') refreshToken: string) {
     try {
@@ -55,7 +53,7 @@ export class WebhookController {
         return ApiResponse.error(
           'Refresh token failed!',
           500,
-          data.error_reason,
+          data.error_description,
         );
       }
 
