@@ -26,6 +26,8 @@ import { BV_ToathuocEntity } from './modules/BV_Toathuoc/BV_Toathuoc.entity';
 import { BV_PhieuXetNghiemEntity } from './modules/BV_PhieuXetNghiem/BV_PhieuXetNghiem.entity';
 import { BV_PhieuCanlamsangEntity } from './modules/BV_PhieuCanlamsang/BV_PhieuCanlamsang.entity';
 import { BV_GiayKhamSucKhoeEntity } from './modules/BV_GiayKhamSucKhoe/BV_GiayKhamSucKhoe.entity';
+import { BV_TiepnhanBenhEntity } from './modules/BV_TiepnhanBenh/BV_TiepnhanBenh.entity';
+import { BV_PhieuTiepNhanCLSEntity } from './modules/BV_PhieuTiepNhanCLS/BV_PhieuTiepNhanCLS.entity';
 
 console.log(' process.env.NODE_ENV === ', process.env.NODE_ENV);
 
@@ -72,7 +74,9 @@ const configSql = TypeOrmModule.forRoot({
     BV_QLyCapTheEntity,
     BV_PhieuChidinhDVCTEntity,
     BV_PhieuSieuamEntity,
-    BV_ToathuocEntity, BV_PhieuXetNghiemEntity, BV_PhieuCanlamsangEntity, BV_GiayKhamSucKhoeEntity
+    BV_ToathuocEntity, BV_PhieuXetNghiemEntity, BV_PhieuCanlamsangEntity, BV_GiayKhamSucKhoeEntity,
+    BV_TiepnhanBenhEntity,
+    BV_PhieuTiepNhanCLSEntity
   ],
   synchronize: false,
 });

@@ -20,8 +20,16 @@ async function bootstrap() {
     swagger_1.SwaggerModule.setup('api', app, documentFactory);
     app.useLogger(logger);
     app.enableCors({
-        origin: ['http://localhost:3000', 'http://172.16.0.10:3004'],
+        origin: true,
         credentials: true,
+        exposedHeaders: [
+            'Content-Type',
+            'Authorization',
+            'Cache-Control',
+            'X-Accel-Buffering',
+            'Connection',
+        ],
+        allowedHeaders: ['Content-Type', 'Authorization'],
     });
     app.use(cookieParser());
     await app.listen(process.env.PORT ?? 3100);

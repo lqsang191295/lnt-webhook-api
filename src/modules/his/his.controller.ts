@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiResponse } from 'src/common/api/api-response';
 import { Public } from 'src/common/decorators/public.decorator';
 import { BV_QLyCapTheService } from '../BV_QLyCapThe/BV_QLyCapThe.service';
@@ -8,6 +8,11 @@ import { BV_ToathuocService } from '../BV_Toathuoc/BV_Toathuoc.service';
 import { BV_PhieuXetNghiemService } from '../BV_PhieuXetNghiem/BV_PhieuXetNghiem.service';
 import { BV_PhieuCanlamsangService } from '../BV_PhieuCanlamsang/BV_PhieuCanlamsang.service';
 import { BV_GiayKhamSucKhoeService } from '../BV_GiayKhamSucKhoe/BV_GiayKhamSucKhoe.service';
+import { BV_TiepnhanBenhService } from '../BV_TiepnhanBenh/BV_TiepnhanBenh.service';
+import { ConvertQuerySelect, ConvertQueryWhere } from 'src/helper/query';
+import { BV_TiepnhanBenhEntity } from '../BV_TiepnhanBenh/BV_TiepnhanBenh.entity';
+import { BV_PhieuTiepNhanCLSService } from '../BV_PhieuTiepNhanCLS/BV_PhieuTiepNhanCLS.service';
+import { BV_PhieuTiepNhanCLSEntity } from '../BV_PhieuTiepNhanCLS/BV_PhieuTiepNhanCLS.entity';
 
 @Controller('his')
 export class HisController {
@@ -18,7 +23,9 @@ export class HisController {
         private readonly toathuocService: BV_ToathuocService,
         private readonly phieuXetNghiemService: BV_PhieuXetNghiemService,
         private readonly phieuCanlamsangService: BV_PhieuCanlamsangService,
-        private readonly giayKhamSucKhoeService: BV_GiayKhamSucKhoeService
+        private readonly giayKhamSucKhoeService: BV_GiayKhamSucKhoeService,
+        private readonly tiepnhanBenhService: BV_TiepnhanBenhService,
+        private readonly phieuTiepNhanCLSService: BV_PhieuTiepNhanCLSService
     ) { }
 
     @Public()
@@ -139,21 +146,21 @@ export class HisController {
         try {
             const capTheData = await this.qLyCapTheService.repository.find({
                 where: {
-                  Hoten: Like(`%${hoVaTen}%`), // tương đương với [~] trong PHP
+                    Hoten: Like(`%${hoVaTen}%`), // tương đương với [~] trong PHP
                 },
                 select: [
-                  'Ma',
-                  'Dienthoai',
-                  'Hoten',
-                  'Ngaysinh',
-                  'Gioitinh',
-                  'Thangsinh',
-                  'Namsinh',
-                  'SoBHYT',
-                  'Diachi',
+                    'Ma',
+                    'Dienthoai',
+                    'Hoten',
+                    'Ngaysinh',
+                    'Gioitinh',
+                    'Thangsinh',
+                    'Namsinh',
+                    'SoBHYT',
+                    'Diachi',
                 ],
                 take: 100, // tương đương 'LIMIT' => 100
-              });
+            });
             return ApiResponse.success('Get thong bao success!', capTheData);
         } catch (ex) {
             return ApiResponse.error('Get thong bao failed!', 500, ex.message);
@@ -166,14 +173,52 @@ export class HisController {
         try {
             const capTheData = await this.qLyCapTheService.repository.find({
                 where: {
-                  Dienthoai: sdt,
+                    Dienthoai: sdt,
                 },
                 select: ['Dienthoai', 'Ma'],
                 take: 1, // tương đương LIMIT 1
-              });
+            });
             return ApiResponse.success('Get thong bao success!', capTheData);
         } catch (ex) {
             return ApiResponse.error('Get thong bao failed!', 500, ex.message);
+        }
+    }
+
+    @Public()
+    @Get('get-BV_TiepnhanBenh')
+    async getBV_TiepnhanBenh(@Query('where') whereQuery: string,
+        @Query('select') selectQuery: string, @Query('limit') limit: number) {
+        try {
+            const where = ConvertQueryWhere<BV_TiepnhanBenhEntity>(whereQuery);
+            const select = ConvertQuerySelect<BV_TiepnhanBenhEntity>(selectQuery);
+            const data = await this.tiepnhanBenhService.repository.find({
+                ...(where ? { where } : {}),
+                ...(select ? { select } : {}),
+                take: limit
+            });
+
+            return ApiResponse.success('Get BV_TiepnhanBenh success!', data);
+        } catch (ex) {
+            return ApiResponse.error('Get BV_TiepnhanBenh failed!', 500, ex.message);
+        }
+    }
+
+    @Public()
+    @Get('get-BV_PhieuTiepNhanCLS')
+    async getBV_PhieuTiepNhanCLS(@Query('where') whereQuery: string,
+        @Query('select') selectQuery: string, @Query('limit') limit: number) {
+        try {
+            const where = ConvertQueryWhere<BV_PhieuTiepNhanCLSEntity>(whereQuery);
+            const select = ConvertQuerySelect<BV_PhieuTiepNhanCLSEntity>(selectQuery);
+            const data = await this.phieuTiepNhanCLSService.repository.find({
+                ...(where ? { where } : {}),
+                ...(select ? { select } : {}),
+                take: limit
+            });
+
+            return ApiResponse.success('Get BV_PhieuTiepNhanCLS success!', data);
+        } catch (ex) {
+            return ApiResponse.error('Get BV_PhieuTiepNhanCLS failed!', 500, ex.message);
         }
     }
 }
