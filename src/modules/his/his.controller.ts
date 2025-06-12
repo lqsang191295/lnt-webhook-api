@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UnauthorizedException } from '@nestjs/common';
 import { ApiResponse } from 'src/common/api/api-response';
 import { Public } from 'src/common/decorators/public.decorator';
 import { BV_QLyCapTheService } from '../BV_QLyCapThe/BV_QLyCapThe.service';
@@ -9,10 +9,12 @@ import { BV_PhieuXetNghiemService } from '../BV_PhieuXetNghiem/BV_PhieuXetNghiem
 import { BV_PhieuCanlamsangService } from '../BV_PhieuCanlamsang/BV_PhieuCanlamsang.service';
 import { BV_GiayKhamSucKhoeService } from '../BV_GiayKhamSucKhoe/BV_GiayKhamSucKhoe.service';
 import { BV_TiepnhanBenhService } from '../BV_TiepnhanBenh/BV_TiepnhanBenh.service';
-import { ConvertQuerySelect, ConvertQueryWhere } from 'src/helper/query';
+import { ConvertQuerySelect, ConvertQueryWhere, parseCondition } from 'src/helper/query';
 import { BV_TiepnhanBenhEntity } from '../BV_TiepnhanBenh/BV_TiepnhanBenh.entity';
 import { BV_PhieuTiepNhanCLSService } from '../BV_PhieuTiepNhanCLS/BV_PhieuTiepNhanCLS.service';
 import { BV_PhieuTiepNhanCLSEntity } from '../BV_PhieuTiepNhanCLS/BV_PhieuTiepNhanCLS.entity';
+import { AD_UserAccountService } from '../AD_UserAccount/AD_UserAccount.service';
+import HISCrypto from 'src/common/crypto/HISCrypto';
 
 @Controller('his')
 export class HisController {
@@ -25,7 +27,8 @@ export class HisController {
         private readonly phieuCanlamsangService: BV_PhieuCanlamsangService,
         private readonly giayKhamSucKhoeService: BV_GiayKhamSucKhoeService,
         private readonly tiepnhanBenhService: BV_TiepnhanBenhService,
-        private readonly phieuTiepNhanCLSService: BV_PhieuTiepNhanCLSService
+        private readonly phieuTiepNhanCLSService: BV_PhieuTiepNhanCLSService,
+        private readonly userAccountService: AD_UserAccountService
     ) { }
 
     @Public()
@@ -186,17 +189,187 @@ export class HisController {
 
     @Public()
     @Get('get-BV_TiepnhanBenh')
-    async getBV_TiepnhanBenh(@Query('where') whereQuery: string,
-        @Query('select') selectQuery: string, @Query('limit') limit: number) {
+    async getBV_TiepnhanBenh(
+        @Query('where') whereQuery: string,
+        @Query('select') selectQuery: string,
+        @Query('limit') limit: number,
+        @Query('orderBy') orderByQuery: string
+    ) {
         try {
-            const where = ConvertQueryWhere<BV_TiepnhanBenhEntity>(whereQuery);
-            const select = ConvertQuerySelect<BV_TiepnhanBenhEntity>(selectQuery);
-            const data = await this.tiepnhanBenhService.repository.find({
-                ...(where ? { where } : {}),
-                ...(select ? { select } : {}),
-                take: limit
-            });
+            const query = this.tiepnhanBenhService.repository
+                .createQueryBuilder('tiepnhan')
+                .innerJoinAndSelect('tiepnhan.BV_QLyCapThe', 'BV_QLyCapThe');
 
+            // SELECT
+            if (selectQuery && selectQuery !== '*') {
+                const fields = selectQuery
+                    .split(',')
+                    .map(f => f.trim())
+                    .filter(f => f.length > 0);
+
+                if (fields.length === 0) {
+                    return ApiResponse.error('Select fields required!', 400, '');
+                }
+
+                query.select([]);
+
+                for (const field of fields) {
+                    if (field.includes('.')) {
+                        query.addSelect(field);
+                    } else {
+                        query.addSelect(`tiepnhan.${field}`);
+                    }
+                }
+            }
+
+            // WHERE
+            if (whereQuery) {
+                const OPERATORS = ['!=', '>=', '<=', '=', '>', '<', 'LIKE'];
+
+                const parseCondition = (condition: string): { field: string, operator: string, value: string } | null => {
+                    for (const op of OPERATORS) {
+                        const parts = condition.split(op);
+                        if (parts.length === 2) {
+                            return {
+                                field: parts[0].trim(),
+                                operator: op,
+                                value: parts[1].trim().replace(/^['"]|['"]$/g, '')
+                            };
+                        }
+                    }
+                    return null;
+                };
+
+                const orGroups = whereQuery.split(/or/i);
+
+                for (let i = 0; i < orGroups.length; i++) {
+                    const andConditions = orGroups[i].split('&');
+                    const andWhereFns: any[] = [];
+
+                    for (let j = 0; j < andConditions.length; j++) {
+                        const cond = andConditions[j].trim();
+                        const parsed = parseCondition(cond);
+
+                        if (!parsed) {
+                            return ApiResponse.error(`Invalid condition: ${cond}`, 400, '');
+                        }
+
+                        const { field, operator, value } = parsed;
+                        const paramKey = `param_${i}_${j}`;
+
+                        let clause = '';
+                        if (field.includes('.')) {
+                            clause = `${field} ${operator} :${paramKey}`;
+                        } else {
+                            clause = `tiepnhan.${field} ${operator} :${paramKey}`;
+                        }
+
+                        andWhereFns.push({ clause, paramKey, value });
+                    }
+
+                    const group = andWhereFns.map(e => e.clause).join(' AND ');
+                    const params = Object.fromEntries(andWhereFns.map(e => [e.paramKey, e.value]));
+
+                    if (i === 0) {
+                        query.where(`(${group})`, params);
+                    } else {
+                        query.orWhere(`(${group})`, params);
+                    }
+                }
+            }
+
+            // ORDER BY
+            if (orderByQuery) {
+                const orderBys = orderByQuery.split(',').map(o => o.trim()).filter(Boolean);
+
+                for (const order of orderBys) {
+                    let field = order;
+                    let direction: 'ASC' | 'DESC' = 'ASC'; // default
+
+                    if (order.includes(':')) {
+                        const [fieldPart, dirPart] = order.split(':');
+                        field = fieldPart;
+                        direction = dirPart.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+                    }
+
+                    if (field.includes('.')) {
+                        query.addOrderBy(field, direction);
+                    } else {
+                        query.addOrderBy(`tiepnhan.${field}`, direction);
+                    }
+                }
+            }
+
+            // LIMIT
+            if (limit && limit > 0) {
+                query.take(limit);
+            }
+
+            const data = await query.getMany();
+            return ApiResponse.success('Get BV_TiepnhanBenh success!', data);
+        } catch (ex) {
+            return ApiResponse.error('Get BV_TiepnhanBenh failed!', 500, ex.message);
+        }
+    }
+
+    @Public()
+    @Post('get-BV_TiepnhanBenh')
+    async postBV_TiepnhanBenh(
+        @Query('where') whereQuery: string,
+        @Query('select') selectQuery: string,
+        @Query('limit') limit: number
+    ) {
+        try {
+            const query = this.tiepnhanBenhService.repository
+                .createQueryBuilder('tiepnhan')
+                .innerJoinAndSelect('tiepnhan.BV_QLyCapThe', 'BV_QLyCapThe'); // 👈 Dùng join nếu chỉ cần field
+
+            // Parse select fields
+            if (selectQuery && selectQuery !== '*') {
+                const fields = selectQuery
+                    ?.split(',')
+                    .map(f => f.trim())
+                    .filter(f => f.length > 0) ?? [];
+
+                if (fields.length === 0) {
+                    return ApiResponse.error('Select fields required!', 400, '');
+                }
+
+                query.select([]); // Clear any default select
+
+                for (const field of fields) {
+                    if (field.includes('.')) {
+                        // Quan hệ: qlyCapThe.HoTen => alias.field
+                        query.addSelect(field);
+                    } else {
+                        // Bảng chính: ID, MaBN
+                        query.addSelect(`tiepnhan.${field}`);
+                    }
+                }
+            }
+
+            // Parse where: MaBN='123' hoặc qlyCapThe.HoTen='ABC'
+            if (whereQuery) {
+                const match = whereQuery.match(/^(.+?)=['"]?(.+?)['"]?$/);
+                if (match) {
+                    const [, rawField, rawValue] = match;
+                    const value = rawValue.trim();
+                    if (rawField.includes('.')) {
+                        const [alias, key] = rawField.split('.');
+                        query.where(`${alias}.${key} = :value`, { value });
+                    } else {
+                        query.where(`tiepnhan.${rawField} = :value`, { value });
+                    }
+                } else {
+                    return ApiResponse.error('Invalid where format. Expected: field=value', 400, '');
+                }
+            }
+
+            if (limit && limit > 0) {
+                query.take(limit);
+            }
+
+            const data = await query.getMany();
             return ApiResponse.success('Get BV_TiepnhanBenh success!', data);
         } catch (ex) {
             return ApiResponse.error('Get BV_TiepnhanBenh failed!', 500, ex.message);
@@ -219,6 +392,29 @@ export class HisController {
             return ApiResponse.success('Get BV_PhieuTiepNhanCLS success!', data);
         } catch (ex) {
             return ApiResponse.error('Get BV_PhieuTiepNhanCLS failed!', 500, ex.message);
+        }
+    }
+
+    @Public()
+    @Post('check-bac-si')
+    async checkBacSi(@Body('user') username: string,
+        @Body('pass') password: string) {
+        try {
+            if (!username || !password) throw new UnauthorizedException();
+
+            const user = await this.userAccountService.findOne(username);
+
+            if (!user) {
+                throw new UnauthorizedException();
+            }
+
+            if (this.userAccountService.md5Hash(password) !== user.Password) {
+                throw new UnauthorizedException();
+            }
+
+            return ApiResponse.success('Check bac si success!', true);
+        } catch (ex) {
+            return ApiResponse.error('Check bac si failed!', 500, ex.message);
         }
     }
 }

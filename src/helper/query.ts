@@ -31,3 +31,19 @@ export const ConvertQuerySelect = <T>(selectQuery: string): FindOptionsSelect<T>
 
   return select;
 };
+
+const OPERATORS = ['!=', '>=', '<=', '=', '>', '<', 'LIKE'];
+
+export function parseCondition(condition: string): { field: string, operator: string, value: string } | null {
+    for (const op of OPERATORS) {
+        const parts = condition.split(op);
+        if (parts.length === 2) {
+            return {
+                field: parts[0].trim(),
+                operator: op,
+                value: parts[1].trim().replace(/^['"]|['"]$/g, '') // remove quotes
+            };
+        }
+    }
+    return null;
+}

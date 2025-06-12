@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
+import { BV_QLyCapTheEntity } from '../BV_QLyCapThe/BV_QLyCapThe.entity';
 
 @Entity({
   name: 'BV_TiepnhanBenh',
@@ -330,4 +331,8 @@ export class BV_TiepnhanBenhEntity {
 
   @Column()
   Sinhhieu_NhanApPhai: string;
+
+  @OneToOne(() => BV_QLyCapTheEntity, qlyCapThe => qlyCapThe.Ma)
+  @JoinColumn({ name: 'MaBN' }) 
+  BV_QLyCapThe: BV_QLyCapTheEntity;
 }

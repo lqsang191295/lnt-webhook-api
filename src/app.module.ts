@@ -28,6 +28,7 @@ import { BV_PhieuCanlamsangEntity } from './modules/BV_PhieuCanlamsang/BV_PhieuC
 import { BV_GiayKhamSucKhoeEntity } from './modules/BV_GiayKhamSucKhoe/BV_GiayKhamSucKhoe.entity';
 import { BV_TiepnhanBenhEntity } from './modules/BV_TiepnhanBenh/BV_TiepnhanBenh.entity';
 import { BV_PhieuTiepNhanCLSEntity } from './modules/BV_PhieuTiepNhanCLS/BV_PhieuTiepNhanCLS.entity';
+// import { AppGateway } from './Gateway/app.gateway';
 
 console.log(' process.env.NODE_ENV === ', process.env.NODE_ENV);
 
@@ -102,6 +103,9 @@ const jwtConfig = JwtModule.register({
     PushNotificationModule,
   ],
   controllers: [AppController, AuthController],
-  providers: [AppService, AuthService, PushNotificationService],
+  providers: [AppService, AuthService, PushNotificationService, 
+    // AppGateway
+
+  ],
 })
 export class AppModule { }
