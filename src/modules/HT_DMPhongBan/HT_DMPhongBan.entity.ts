@@ -2,9 +2,9 @@ import { Entity, Column, PrimaryColumn, OneToOne, JoinColumn } from 'typeorm';
 import { BV_QLyCapTheEntity } from '../BV_QLyCapThe/BV_QLyCapThe.entity';
 
 @Entity({
-  name: 'BV_PhieuTiepNhanCLS',
+  name: 'HT_DMPhongBan',
 })
-export class BV_PhieuTiepNhanCLSEntity {
+export class HT_DMPhongBanEntity {
   @PrimaryColumn('uuid')
   ID: string;
 

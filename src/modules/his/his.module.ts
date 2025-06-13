@@ -10,10 +10,11 @@ import { BV_GiayKhamSucKhoeModule } from '../BV_GiayKhamSucKhoe/BV_GiayKhamSucKh
 import { BV_TiepnhanBenhModule } from '../BV_TiepnhanBenh/BV_TiepnhanBenh.module';
 import { BV_PhieuTiepNhanCLSModule } from '../BV_PhieuTiepNhanCLS/BV_PhieuTiepNhanCLS.module';
 import { AD_UserAccountModule } from '../AD_UserAccount/AD_UserAccount.module';
+import { HT_DMPhongBanModule } from '../HT_DMPhongBan/HT_DMPhongBan.module';
 
 @Module({
   imports: [BV_QLyCapTheModule, BV_PhieuSieuamModule, BV_ToathuocModule, BV_PhieuXetNghiemModule, BV_PhieuCanlamsangModule, BV_GiayKhamSucKhoeModule, BV_TiepnhanBenhModule,
-    BV_PhieuTiepNhanCLSModule, AD_UserAccountModule
+    BV_PhieuTiepNhanCLSModule, AD_UserAccountModule, HT_DMPhongBanModule
   ],
   providers: [HisService],
   controllers: [HisController]

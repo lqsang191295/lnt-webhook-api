@@ -251,7 +251,8 @@ export class HisController {
     async postBV_TiepnhanBenh(
         @Query('where') whereQuery: string,
         @Query('select') selectQuery: string,
-        @Query('limit') limit: number
+        @Query('limit') limit: number,
+        @Query('orderBy') orderByQuery?: string,
     ) {
         try {
             const query = this.tiepnhanBenhService.repository
@@ -299,6 +300,21 @@ export class HisController {
                 }
             }
 
+            // ORDER BY
+            if (orderByQuery) {
+                const orderBys = orderByQuery.split(',').map(o => o.trim()).filter(Boolean);
+                for (const order of orderBys) {
+                    let field = order;
+                    let direction: 'ASC' | 'DESC' = 'ASC';
+                    if (order.includes(':')) {
+                        const [fieldPart, dirPart] = order.split(':');
+                        field = fieldPart;
+                        direction = dirPart.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+                    }
+                    query.addOrderBy(field.includes('.') ? field : `tiepnhan.${field}`, direction);
+                }
+            }
+
             if (limit && limit > 0) {
                 query.take(limit);
             }
@@ -312,20 +328,81 @@ export class HisController {
 
     @Public()
     @Get('get-BV_PhieuTiepNhanCLS')
-    async getBV_PhieuTiepNhanCLS(@Query('where') whereQuery: string,
-        @Query('select') selectQuery: string, @Query('limit') limit: number) {
+    async getBV_PhieuTiepNhanCLS(
+        @Query('where') whereQuery: string,
+        @Query('select') selectQuery: string,
+        @Query('limit') limit: number,
+        @Query('orderBy') orderByQuery?: string,
+    ) {
         try {
-            const where = ConvertQueryWhere<BV_PhieuTiepNhanCLSEntity>(whereQuery);
-            const select = ConvertQuerySelect<BV_PhieuTiepNhanCLSEntity>(selectQuery);
-            const data = await this.phieuTiepNhanCLSService.repository.find({
-                ...(where ? { where } : {}),
-                ...(select ? { select } : {}),
-                take: limit
-            });
+            const query = this.phieuTiepNhanCLSService.repository
+                .createQueryBuilder('tiepnhan')
+                .innerJoinAndSelect('tiepnhan.BV_QLyCapThe', 'BV_QLyCapThe'); // 👈 Dùng join nếu chỉ cần field
 
-            return ApiResponse.success('Get BV_PhieuTiepNhanCLS success!', data);
+            // Parse select fields
+            if (selectQuery && selectQuery !== '*') {
+                const fields = selectQuery
+                    ?.split(',')
+                    .map(f => f.trim())
+                    .filter(f => f.length > 0) ?? [];
+
+                if (fields.length === 0) {
+                    return ApiResponse.error('Select fields required!', 400, '');
+                }
+
+                query.select([]); // Clear any default select
+
+                for (const field of fields) {
+                    if (field.includes('.')) {
+                        // Quan hệ: qlyCapThe.HoTen => alias.field
+                        query.addSelect(field);
+                    } else {
+                        // Bảng chính: ID, MaBN
+                        query.addSelect(`tiepnhan.${field}`);
+                    }
+                }
+            }
+
+            // Parse where: MaBN='123' hoặc qlyCapThe.HoTen='ABC'
+            if (whereQuery) {
+                const match = whereQuery.match(/^(.+?)=['"]?(.+?)['"]?$/);
+                if (match) {
+                    const [, rawField, rawValue] = match;
+                    const value = rawValue.trim();
+                    if (rawField.includes('.')) {
+                        const [alias, key] = rawField.split('.');
+                        query.where(`${alias}.${key} = :value`, { value });
+                    } else {
+                        query.where(`tiepnhan.${rawField} = :value`, { value });
+                    }
+                } else {
+                    return ApiResponse.error('Invalid where format. Expected: field=value', 400, '');
+                }
+            }
+
+            // ORDER BY
+            if (orderByQuery) {
+                const orderBys = orderByQuery.split(',').map(o => o.trim()).filter(Boolean);
+                for (const order of orderBys) {
+                    let field = order;
+                    let direction: 'ASC' | 'DESC' = 'ASC';
+                    if (order.includes(':')) {
+                        const [fieldPart, dirPart] = order.split(':');
+                        field = fieldPart;
+                        direction = dirPart.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+                    }
+                    query.addOrderBy(field.includes('.') ? field : `tiepnhan.${field}`, direction);
+                }
+            }
+
+            if (limit && limit > 0) {
+                query.take(limit);
+            }
+
+            const data = await query.getMany();
+            return ApiResponse.success('Get BV_TiepnhanBenh success!', data);
         } catch (ex) {
-            return ApiResponse.error('Get BV_PhieuTiepNhanCLS failed!', 500, ex.message);
+            return ApiResponse.error('Get BV_TiepnhanBenh failed!', 500, ex.message);
         }
     }
 
