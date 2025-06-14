@@ -194,7 +194,6 @@ export class HisController {
         @Query('where') whereQuery: string,
         @Query('select') selectQuery: string,
         @Query('limit') limit?: number,
-        @Query('orderBy') orderByQuery?: string,
     ) {
         try {
             const query = this.tiepnhanBenhService.repository
@@ -221,26 +220,10 @@ export class HisController {
                 query.where(clause, params);
             }
 
-            // ORDER BY
-            if (orderByQuery) {
-                const orderBys = orderByQuery.split(',').map(o => o.trim()).filter(Boolean);
-                for (const order of orderBys) {
-                    let field = order;
-                    let direction: 'ASC' | 'DESC' = 'ASC';
-                    if (order.includes(':')) {
-                        const [fieldPart, dirPart] = order.split(':');
-                        field = fieldPart;
-                        direction = dirPart.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
-                    }
-                    query.addOrderBy(field.includes('.') ? field : `tiepnhan.${field}`, direction);
-                }
-            }
-
             // LIMIT
             if (limit && limit > 0) {
                 query.take(limit);
             }
-
             const data = await query.getMany();
             return ApiResponse.success('Get BV_TiepnhanBenh success!', data);
         } catch (ex) {
