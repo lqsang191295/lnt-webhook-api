@@ -331,6 +331,9 @@ export class BV_TiepnhanBenhEntity {
 
   @Column()
   Sinhhieu_NhanApPhai: string;
+  
+  @Column()
+  Phong: string;
 
   @OneToOne(() => BV_QLyCapTheEntity, qlyCapThe => qlyCapThe.Ma)
   @JoinColumn({ name: 'MaBN' }) 
