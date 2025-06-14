@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post, Query, UnauthorizedException } from '@nestjs/common';
 import { ApiResponse } from 'src/common/api/api-response';
 import { Public } from 'src/common/decorators/public.decorator';
 import { BV_QLyCapTheService } from '../BV_QLyCapThe/BV_QLyCapThe.service';
@@ -19,6 +19,7 @@ import { CheckBacSiDto } from './his.dto';
 
 @Controller('his')
 export class HisController {
+    private readonly logger = new Logger(HisController.name);
 
     constructor(
         private readonly qLyCapTheService: BV_QLyCapTheService,
@@ -373,6 +374,8 @@ export class HisController {
         @Query('orderBy') orderByQuery: string,
     ) {
         try {
+            this.logger.log(`getBV_PhieuChidinhDVCT Data request: ${JSON.stringify({whereQuery, selectQuery, orderByQuery, limit})}`);
+
             const data = await this.phieuChidinhDVCTService.getDataCondition(whereQuery, selectQuery, orderByQuery, limit);
 
             return ApiResponse.success('Get BV_PhieuChidinhDVCT success!', data);

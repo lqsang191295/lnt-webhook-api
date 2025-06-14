@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToOne, JoinColumn } from 'typeorm';
+import { BV_QLyCapTheEntity } from '../BV_QLyCapThe/BV_QLyCapThe.entity';
 
 @Entity({ name: 'BV_PhieuChidinhDVCT' })
 export class BV_PhieuChidinhDVCTEntity {
@@ -289,4 +290,8 @@ export class BV_PhieuChidinhDVCTEntity {
 
   @Column('nvarchar')
   Link: string;
+
+  @OneToOne(() => BV_QLyCapTheEntity, qlyCapThe => qlyCapThe.Ma)
+  @JoinColumn({ name: 'MaBN' })
+  BV_QLyCapThe: BV_QLyCapTheEntity;
 }
