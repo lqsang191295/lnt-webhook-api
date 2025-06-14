@@ -9,7 +9,7 @@ export class BV_PhieuTiepNhanCLSEntity {
   ID: string;
 
   @Column()
-  Ngay: Date;
+  Ngay: string;
 
   @Column()
   SoVaoVien: string;
@@ -21,10 +21,10 @@ export class BV_PhieuTiepNhanCLSEntity {
   TrangThai: string;
 
   @Column()
-  GioVao: Date;
+  GioVao: string;
 
   @Column()
-  GioRa: Date;
+  GioRa: string;
 
   @Column()
   LoaiCLS: string;

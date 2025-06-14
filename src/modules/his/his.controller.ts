@@ -3,7 +3,7 @@ import { ApiResponse } from 'src/common/api/api-response';
 import { Public } from 'src/common/decorators/public.decorator';
 import { BV_QLyCapTheService } from '../BV_QLyCapThe/BV_QLyCapThe.service';
 import { BV_PhieuSieuamService } from '../BV_PhieuSieuam/BV_PhieuSieuam.service';
-import { IsNull, Like, Not } from 'typeorm';
+import { FindManyOptions, IsNull, Like, Not } from 'typeorm';
 import { BV_ToathuocService } from '../BV_Toathuoc/BV_Toathuoc.service';
 import { BV_PhieuXetNghiemService } from '../BV_PhieuXetNghiem/BV_PhieuXetNghiem.service';
 import { BV_PhieuCanlamsangService } from '../BV_PhieuCanlamsang/BV_PhieuCanlamsang.service';
@@ -14,6 +14,7 @@ import { BV_PhieuTiepNhanCLSService } from '../BV_PhieuTiepNhanCLS/BV_PhieuTiepN
 import { BV_PhieuTiepNhanCLSEntity } from '../BV_PhieuTiepNhanCLS/BV_PhieuTiepNhanCLS.entity';
 import { AD_UserAccountService } from '../AD_UserAccount/AD_UserAccount.service';
 import jsep from 'jsep';
+import { HT_DMPhongBanService } from '../HT_DMPhongBan/HT_DMPhongBan.service';
 
 @Controller('his')
 export class HisController {
@@ -27,7 +28,8 @@ export class HisController {
         private readonly giayKhamSucKhoeService: BV_GiayKhamSucKhoeService,
         private readonly tiepnhanBenhService: BV_TiepnhanBenhService,
         private readonly phieuTiepNhanCLSService: BV_PhieuTiepNhanCLSService,
-        private readonly userAccountService: AD_UserAccountService
+        private readonly userAccountService: AD_UserAccountService,
+        private readonly dmPhongBanService: HT_DMPhongBanService
     ) { }
 
     @Public()
@@ -247,86 +249,6 @@ export class HisController {
     }
 
     @Public()
-    @Post('get-BV_TiepnhanBenh')
-    async postBV_TiepnhanBenh(
-        @Query('where') whereQuery: string,
-        @Query('select') selectQuery: string,
-        @Query('limit') limit: number,
-        @Query('orderBy') orderByQuery?: string,
-    ) {
-        try {
-            const query = this.tiepnhanBenhService.repository
-                .createQueryBuilder('tiepnhan')
-                .innerJoinAndSelect('tiepnhan.BV_QLyCapThe', 'BV_QLyCapThe'); // 👈 Dùng join nếu chỉ cần field
-
-            // Parse select fields
-            if (selectQuery && selectQuery !== '*') {
-                const fields = selectQuery
-                    ?.split(',')
-                    .map(f => f.trim())
-                    .filter(f => f.length > 0) ?? [];
-
-                if (fields.length === 0) {
-                    return ApiResponse.error('Select fields required!', 400, '');
-                }
-
-                query.select([]); // Clear any default select
-
-                for (const field of fields) {
-                    if (field.includes('.')) {
-                        // Quan hệ: qlyCapThe.HoTen => alias.field
-                        query.addSelect(field);
-                    } else {
-                        // Bảng chính: ID, MaBN
-                        query.addSelect(`tiepnhan.${field}`);
-                    }
-                }
-            }
-
-            // Parse where: MaBN='123' hoặc qlyCapThe.HoTen='ABC'
-            if (whereQuery) {
-                const match = whereQuery.match(/^(.+?)=['"]?(.+?)['"]?$/);
-                if (match) {
-                    const [, rawField, rawValue] = match;
-                    const value = rawValue.trim();
-                    if (rawField.includes('.')) {
-                        const [alias, key] = rawField.split('.');
-                        query.where(`${alias}.${key} = :value`, { value });
-                    } else {
-                        query.where(`tiepnhan.${rawField} = :value`, { value });
-                    }
-                } else {
-                    return ApiResponse.error('Invalid where format. Expected: field=value', 400, '');
-                }
-            }
-
-            // ORDER BY
-            if (orderByQuery) {
-                const orderBys = orderByQuery.split(',').map(o => o.trim()).filter(Boolean);
-                for (const order of orderBys) {
-                    let field = order;
-                    let direction: 'ASC' | 'DESC' = 'ASC';
-                    if (order.includes(':')) {
-                        const [fieldPart, dirPart] = order.split(':');
-                        field = fieldPart;
-                        direction = dirPart.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
-                    }
-                    query.addOrderBy(field.includes('.') ? field : `tiepnhan.${field}`, direction);
-                }
-            }
-
-            if (limit && limit > 0) {
-                query.take(limit);
-            }
-
-            const data = await query.getMany();
-            return ApiResponse.success('Get BV_TiepnhanBenh success!', data);
-        } catch (ex) {
-            return ApiResponse.error('Get BV_TiepnhanBenh failed!', 500, ex.message);
-        }
-    }
-
-    @Public()
     @Get('get-BV_PhieuTiepNhanCLS')
     async getBV_PhieuTiepNhanCLS(
         @Query('where') whereQuery: string,
@@ -363,21 +285,10 @@ export class HisController {
                 }
             }
 
-            // Parse where: MaBN='123' hoặc qlyCapThe.HoTen='ABC'
             if (whereQuery) {
-                const match = whereQuery.match(/^(.+?)=['"]?(.+?)['"]?$/);
-                if (match) {
-                    const [, rawField, rawValue] = match;
-                    const value = rawValue.trim();
-                    if (rawField.includes('.')) {
-                        const [alias, key] = rawField.split('.');
-                        query.where(`${alias}.${key} = :value`, { value });
-                    } else {
-                        query.where(`tiepnhan.${rawField} = :value`, { value });
-                    }
-                } else {
-                    return ApiResponse.error('Invalid where format. Expected: field=value', 400, '');
-                }
+                const ast = jsep(whereQuery);
+                const { clause, params } = buildWhereFromAst(ast);
+                query.where(clause, params);
             }
 
             // ORDER BY
@@ -426,6 +337,44 @@ export class HisController {
             return ApiResponse.success('Check bac si success!', true);
         } catch (ex) {
             return ApiResponse.error('Check bac si failed!', 500, ex.message);
+        }
+    }
+
+    @Public()
+    @Get('get-HT_DMPhongBan')
+    async getHT_DMPhongBan() {
+        try {
+            const data = await this.dmPhongBanService.findAll();
+            return ApiResponse.success('Get HT_DMPhongBan success!', data);
+        } catch (ex) {
+            return ApiResponse.error('Get HT_DMPhongBan failed!', 500, ex.message);
+        }
+    }
+
+    @Public()
+    @Get('get-HT_DMPhongBan-query')
+    async getHT_DMPhongBanCondition(
+        @Query('where') whereQuery: string,
+        @Query('select') selectQuery: string,
+        @Query('limit') limit: number,
+        @Query('orderBy') orderByQuery?: string,
+    ) {
+        try {
+            const where = whereQuery ? JSON.parse(whereQuery) : {};
+            const select = selectQuery ? JSON.parse(selectQuery) : undefined;
+            const order = orderByQuery ? JSON.parse(orderByQuery) : undefined;
+
+            const options: FindManyOptions = {
+                where,
+                select,
+                take: limit || 100, // default limit
+                order,
+            };
+
+            const data = await this.dmPhongBanService.repository.find(options);
+            return ApiResponse.success('Get HT_DMPhongBan success!', data);
+        } catch (ex) {
+            return ApiResponse.error('Get HT_DMPhongBan failed!', 500, ex.message);
         }
     }
 }

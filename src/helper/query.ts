@@ -64,40 +64,55 @@ export function buildWhereFromAst(node: jsep.Expression, index = { i: 0 }): { cl
 
   if (node.type === 'BinaryExpression') {
     const binary = node as jsep.BinaryExpression;
-    const operator = binary.operator?.toUpperCase();
+    const operator = binary.operator;
 
-    if (!operator) throw new Error('Missing operator');
+    const logicalOps = ['&&', '||', 'AND', 'OR'];
+    const comparisonOps = ['==', '!=', '>', '<', '>=', '<='];
 
-    const isLogical = ['AND', '&&', '&', 'OR', '||', '|'].includes(operator);
+    if (logicalOps.includes(operator)) {
+      const left = buildWhereFromAst(binary.left, index);
+      const right = buildWhereFromAst(binary.right, index);
+      const joiner = ['||', 'OR'].includes(operator) ? 'OR' : 'AND';
 
-    if (isLogical) {
-      const left = buildWhereFromAst(binary.left as jsep.Expression, index);
-      const right = buildWhereFromAst(binary.right as jsep.Expression, index);
-      const joiner = ['OR', '||', '|'].includes(operator) ? 'OR' : 'AND';
       return {
         clause: `(${left.clause} ${joiner} ${right.clause})`,
         params: { ...left.params, ...right.params },
       };
     }
 
-    // 🔁 Convert JS operator to SQL
-    let sqlOperator = operator;
-    if (operator === '==') sqlOperator = '=';
-    if (operator === '!=') sqlOperator = '!=';
+    if (comparisonOps.includes(operator)) {
+      const paramKey = `param_${index.i++}`;
+      const field = getField(binary.left);
+      const value = getValue(binary.right);
 
-    const paramKey = `param_${index.i++}`;
-    const field = (binary.left as jsep.Identifier).name;
-    const value = (binary.right as jsep.Literal).value;
+      let sqlOperator = operator;
+      if (operator === '==') sqlOperator = '=';
+      if (operator === '!=') sqlOperator = '!=';
 
-    const clause = field.includes('.')
-      ? `${field} ${sqlOperator} :${paramKey}`
-      : `tiepnhan.${field} ${sqlOperator} :${paramKey}`;
+      return {
+        clause: `${field} ${sqlOperator} :${paramKey}`,
+        params: { [paramKey]: value },
+      };
+    }
 
-    return {
-      clause,
-      params: { [paramKey]: value },
-    };
+    throw new Error(`Unsupported operator: ${operator}`);
   }
 
   throw new Error(`Unsupported node type: ${node.type}`);
+}
+
+function isIdentifier(node: jsep.Expression): node is jsep.Identifier {
+  return node.type === 'Identifier' && typeof (node as any).name === 'string';
+}
+
+function getField(node: jsep.Expression): string {
+  if (isIdentifier(node)) {
+    return node.name.includes('.') ? node.name : `tiepnhan.${node.name}`;
+  }
+  throw new Error('Expected identifier on left side of binary expression');
+}
+
+function getValue(node: jsep.Expression): any {
+  if (node.type === 'Literal') return node.value;
+  throw new Error('Expected literal value on right side');
 }

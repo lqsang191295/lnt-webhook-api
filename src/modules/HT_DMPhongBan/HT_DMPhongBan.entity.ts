@@ -1,41 +1,43 @@
-import { Entity, Column, PrimaryColumn, OneToOne, JoinColumn } from 'typeorm';
-import { BV_QLyCapTheEntity } from '../BV_QLyCapThe/BV_QLyCapThe.entity';
+import { Entity, Column,  PrimaryColumn } from 'typeorm';
 
-@Entity({
-  name: 'HT_DMPhongBan',
-})
+@Entity({ name: 'HT_DMPhongBan' })
 export class HT_DMPhongBanEntity {
-  @PrimaryColumn('uuid')
-  ID: string;
+  @PrimaryColumn()
+  Ma: string;
 
-  @Column()
-  Ngay: Date;
+  @Column({ type: 'nvarchar', length: 255 })
+  Ten: string;
 
-  @Column()
-  SoVaoVien: string;
+  @Column({ type: 'nvarchar', length: 255 })
+  MaKhoa: string;
 
-  @Column()
-  MaBN: string;
+  @Column({ type: 'nvarchar', length: 255 })
+  Diengiai: string;
 
-  @Column()
-  TrangThai: string;
+  @Column({ type: 'nvarchar', length: 255 })
+  KhoThuoc: string;
 
-  @Column()
-  GioVao: Date;
+  @Column({ type: 'nvarchar', length: 255 })
+  KhoVTTTB: string;
 
-  @Column()
-  GioRa: Date;
+  @Column({ type: 'nvarchar', length: 255 })
+  KhoVTYT: string;
 
-  @Column()
-  LoaiCLS: string;
+  @Column({ type: 'nvarchar', length: 255 })
+  TKChiphi: string;
 
-  @Column()
-  GhiChu: string;
+  @Column({ type: 'nvarchar', length: 255 })
+  TKLuong: string;
 
-  @Column()
-  IP: string;
+  @Column({ type: 'bit', default: false })
+  Chon: boolean;
 
-  @OneToOne(() => BV_QLyCapTheEntity, qlyCapThe => qlyCapThe.Ma)
-  @JoinColumn({ name: 'MaBN' }) 
-  BV_QLyCapThe: BV_QLyCapTheEntity;
+  @Column({ type: 'bit', default: false })
+  Noitru: boolean;
+
+  @Column({ type: 'datetime', nullable: true })
+  UPDATE_DATE: Date;
+
+  @Column({ type: 'nvarchar', length: 255 })
+  Tang: string;
 }
