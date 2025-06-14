@@ -11,10 +11,11 @@ import { BV_GiayKhamSucKhoeService } from '../BV_GiayKhamSucKhoe/BV_GiayKhamSucK
 import { BV_TiepnhanBenhService } from '../BV_TiepnhanBenh/BV_TiepnhanBenh.service';
 import { buildWhereFromAst, ConvertQuerySelect, ConvertQueryWhere, normalizeWhereQuery, parseCondition } from 'src/helper/query';
 import { BV_PhieuTiepNhanCLSService } from '../BV_PhieuTiepNhanCLS/BV_PhieuTiepNhanCLS.service';
-import { BV_PhieuTiepNhanCLSEntity } from '../BV_PhieuTiepNhanCLS/BV_PhieuTiepNhanCLS.entity';
 import { AD_UserAccountService } from '../AD_UserAccount/AD_UserAccount.service';
 import jsep from 'jsep';
 import { HT_DMPhongBanService } from '../HT_DMPhongBan/HT_DMPhongBan.service';
+import { BV_PhieuChidinhDVCTService } from '../BV_PhieuChidinhDVCT/BV_PhieuChidinhDVCT.service';
+import { CheckBacSiDto } from './his.dto';
 
 @Controller('his')
 export class HisController {
@@ -29,7 +30,8 @@ export class HisController {
         private readonly tiepnhanBenhService: BV_TiepnhanBenhService,
         private readonly phieuTiepNhanCLSService: BV_PhieuTiepNhanCLSService,
         private readonly userAccountService: AD_UserAccountService,
-        private readonly dmPhongBanService: HT_DMPhongBanService
+        private readonly dmPhongBanService: HT_DMPhongBanService,
+        private readonly phieuChidinhDVCTService: BV_PhieuChidinhDVCTService
     ) { }
 
     @Public()
@@ -302,9 +304,10 @@ export class HisController {
 
     @Public()
     @Post('check-bac-si')
-    async checkBacSi(@Body('user') username: string,
-        @Body('pass') password: string) {
+    async checkBacSi(@Body() dto: CheckBacSiDto) {
         try {
+            const { user: username, pass: password } = dto;
+
             if (!username || !password) throw new UnauthorizedException();
 
             const user = await this.userAccountService.findOne(username);
@@ -358,6 +361,23 @@ export class HisController {
             return ApiResponse.success('Get HT_DMPhongBan success!', data);
         } catch (ex) {
             return ApiResponse.error('Get HT_DMPhongBan failed!', 500, ex.message);
+        }
+    }
+
+    @Public()
+    @Get('get-BV_PhieuChidinhDVCT')
+    async getBV_PhieuChidinhDVCT(
+        @Query('where') whereQuery: string,
+        @Query('select') selectQuery: string,
+        @Query('limit') limit: number,
+        @Query('orderBy') orderByQuery: string,
+    ) {
+        try {
+            const data = await this.phieuChidinhDVCTService.getDataCondition(whereQuery, selectQuery, orderByQuery, limit);
+
+            return ApiResponse.success('Get BV_PhieuChidinhDVCT success!', data);
+        } catch (ex) {
+            return ApiResponse.error('Get BV_PhieuChidinhDVCT failed!', 500, ex.message);
         }
     }
 }
