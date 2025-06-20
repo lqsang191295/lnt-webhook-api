@@ -16,6 +16,7 @@ import jsep from 'jsep';
 import { HT_DMPhongBanService } from '../HT_DMPhongBan/HT_DMPhongBan.service';
 import { BV_PhieuChidinhDVCTService } from '../BV_PhieuChidinhDVCT/BV_PhieuChidinhDVCT.service';
 import { CheckBacSiDto } from './his.dto';
+import { formatDateToLocalSQLString } from 'src/helper/timer';
 
 @Controller('his')
 export class HisController {
@@ -374,13 +375,64 @@ export class HisController {
         @Query('orderBy') orderByQuery: string,
     ) {
         try {
-            this.logger.log(`getBV_PhieuChidinhDVCT Data request: ${JSON.stringify({whereQuery, selectQuery, orderByQuery, limit})}`);
+            this.logger.log(`getBV_PhieuChidinhDVCT Data request: ${JSON.stringify({ whereQuery, selectQuery, orderByQuery, limit })}`);
 
             const data = await this.phieuChidinhDVCTService.getDataCondition(whereQuery, selectQuery, orderByQuery, limit);
 
             return ApiResponse.success('Get BV_PhieuChidinhDVCT success!', data);
         } catch (ex) {
             return ApiResponse.error('Get BV_PhieuChidinhDVCT failed!', 500, ex.message);
+        }
+    }
+
+    @Public()
+    @Get('get-BV_PhieuChidinhDVCT-by-nhom/:nhom')
+    async getPhieuChidinhDVCT(
+        @Param('nhom') DSNhomDV: string,
+    ) {
+        try {
+            const now = new Date();
+            const dayTuNgay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+            const dayDenNgay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+            const TuNgay = formatDateToLocalSQLString(dayTuNgay);
+            const DenNgay = formatDateToLocalSQLString(dayDenNgay);
+
+            const data = await this.phieuChidinhDVCTService.execProcedure("sp_getBV_PhieuChidinhDVCT_By_Ngay_NhomDV_Waiting_List", {
+                DSNhomDV,
+                KhoaPhong: null,
+                TuNgay,
+                DenNgay
+            });
+
+            return ApiResponse.success('Get PhieuChidinhDVCT success!', data);
+        } catch (ex) {
+            return ApiResponse.error('Get PhieuChidinhDVCT failed!', 500, ex.message);
+        }
+    }
+
+    @Public()
+    @Get('get-BV_PhieuChidinhDVCT-by-nhom/:nhom/:phong')
+    async getPhieuChidinhDVCTByPhong(
+        @Param('nhom') DSNhomDV: string,
+        @Param('phong') KhoaPhong?: string
+    ) {
+        try {
+            const now = new Date();
+            const dayTuNgay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+            const dayDenNgay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+            const TuNgay = formatDateToLocalSQLString(dayTuNgay);
+            const DenNgay = formatDateToLocalSQLString(dayDenNgay);
+
+            const data = await this.phieuChidinhDVCTService.execProcedure("sp_getBV_PhieuChidinhDVCT_By_Ngay_NhomDV_Waiting_List", {
+                DSNhomDV,
+                KhoaPhong,
+                TuNgay,
+                DenNgay
+            });
+
+            return ApiResponse.success('Get PhieuChidinhDVCT success!', data);
+        } catch (ex) {
+            return ApiResponse.error('Get PhieuChidinhDVCT failed!', 500, ex.message);
         }
     }
 }

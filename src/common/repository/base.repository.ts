@@ -46,4 +46,24 @@ export class BaseRepository<T extends ObjectLiteral> {
   async delete(id: Partial<T>): Promise<void> {
     await this.repository.delete(id);
   }
+
+  async execProcedure<R = any>(procedureName: string, parameters?: Record<string, any>): Promise<R[]> {
+    if (!parameters || Object.keys(parameters).length === 0) {
+      return this.repository.query(`EXEC ${procedureName}`);
+    }
+
+    const sqlParams = Object.entries(parameters).map(([key, value]) => {
+      if (typeof value === 'string') {
+        return `@${key} = N'${value.replace(/'/g, "''")}'`; // N'...' để hỗ trợ Unicode và escape '
+      } else if (value instanceof Date) {
+        return `@${key} = '${value.toISOString()}'`;
+      } else {
+        return `@${key} = ${value}`;
+      }
+    });
+
+    const query = `EXEC ${procedureName} ${sqlParams.join(', ')}`;
+
+    return this.repository.query(query);
+  }
 }
