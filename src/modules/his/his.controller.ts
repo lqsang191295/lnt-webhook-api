@@ -17,6 +17,8 @@ import { HT_DMPhongBanService } from '../HT_DMPhongBan/HT_DMPhongBan.service';
 import { BV_PhieuChidinhDVCTService } from '../BV_PhieuChidinhDVCT/BV_PhieuChidinhDVCT.service';
 import { CheckBacSiDto } from './his.dto';
 import { formatDateToLocalSQLString } from 'src/helper/timer';
+import { BV_PhieuChidinhDVService } from '../BV_PhieuChidinhDV/BV_PhieuChidinhDV.service';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('his')
 export class HisController {
@@ -33,7 +35,8 @@ export class HisController {
         private readonly phieuTiepNhanCLSService: BV_PhieuTiepNhanCLSService,
         private readonly userAccountService: AD_UserAccountService,
         private readonly dmPhongBanService: HT_DMPhongBanService,
-        private readonly phieuChidinhDVCTService: BV_PhieuChidinhDVCTService
+        private readonly phieuChidinhDVCTService: BV_PhieuChidinhDVCTService,
+        private readonly phieuChidinhDVService: BV_PhieuChidinhDVService
     ) { }
 
     @Public()
@@ -433,6 +436,26 @@ export class HisController {
             return ApiResponse.success('Get PhieuChidinhDVCT success!', data);
         } catch (ex) {
             return ApiResponse.error('Get PhieuChidinhDVCT failed!', 500, ex.message);
+        }
+    }
+
+    @Public()
+    @Get('get-BV_PhieuChidinhDV')
+    @ApiQuery({ name: 'where', required: false, description: 'JSON condition, e.g. {"MaBN":"123"}' })
+    @ApiQuery({ name: 'select', required: false, description: 'Fields to select, e.g. MaBN,TrangThai' })
+    @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit number of records' })
+    @ApiQuery({ name: 'orderBy', required: false, description: 'Sort order, e.g. Ngay:DESC' })
+    async getBV_PhieuChidinhDV(
+        @Query('where') whereQuery?: string,
+        @Query('select') selectQuery?: string,
+        @Query('limit') limit?: number,
+        @Query('orderBy') orderByQuery?: string,
+    ) {
+        try {
+            const data = await this.phieuChidinhDVService.getDataCondition(whereQuery, selectQuery, orderByQuery, limit);
+            return ApiResponse.success('Get BV_PhieuChidinhDV success!', data);
+        } catch (ex) {
+            return ApiResponse.error('Get BV_PhieuChidinhDV failed!', 500, ex.message);
         }
     }
 }
