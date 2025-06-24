@@ -21,6 +21,16 @@ import { PushNotificationService } from './modules/push-notification/push-notifi
 import { HT_ThongbaoEntity } from './modules/HT_Thongbao/HT_Thongbao.entity';
 import { BV_QLyCapTheEntity } from './modules/BV_QLyCapThe/BV_QLyCapThe.entity';
 import { BV_PhieuChidinhDVCTEntity } from './modules/BV_PhieuChidinhDVCT/BV_PhieuChidinhDVCT.entity';
+import { BV_PhieuSieuamEntity } from './modules/BV_PhieuSieuam/BV_PhieuSieuam.entity';
+import { BV_ToathuocEntity } from './modules/BV_Toathuoc/BV_Toathuoc.entity';
+import { BV_PhieuXetNghiemEntity } from './modules/BV_PhieuXetNghiem/BV_PhieuXetNghiem.entity';
+import { BV_PhieuCanlamsangEntity } from './modules/BV_PhieuCanlamsang/BV_PhieuCanlamsang.entity';
+import { BV_GiayKhamSucKhoeEntity } from './modules/BV_GiayKhamSucKhoe/BV_GiayKhamSucKhoe.entity';
+import { BV_TiepnhanBenhEntity } from './modules/BV_TiepnhanBenh/BV_TiepnhanBenh.entity';
+import { BV_PhieuTiepNhanCLSEntity } from './modules/BV_PhieuTiepNhanCLS/BV_PhieuTiepNhanCLS.entity';
+import { HT_DMPhongBanEntity } from './modules/HT_DMPhongBan/HT_DMPhongBan.entity';
+import { BV_PhieuChidinhDVEntity } from './modules/BV_PhieuChidinhDV/BV_PhieuChidinhDV.entity';
+// import { AppGateway } from './Gateway/app.gateway';
 
 console.log(' process.env.NODE_ENV === ', process.env.NODE_ENV);
 
@@ -66,6 +76,12 @@ const configSql = TypeOrmModule.forRoot({
     AD_UserLoggedEntity,
     BV_QLyCapTheEntity,
     BV_PhieuChidinhDVCTEntity,
+    BV_PhieuSieuamEntity,
+    BV_ToathuocEntity, BV_PhieuXetNghiemEntity, BV_PhieuCanlamsangEntity, BV_GiayKhamSucKhoeEntity,
+    BV_TiepnhanBenhEntity,
+    BV_PhieuTiepNhanCLSEntity,
+    BV_PhieuChidinhDVEntity,
+    HT_DMPhongBanEntity
   ],
   synchronize: false,
 });
@@ -91,6 +107,9 @@ const jwtConfig = JwtModule.register({
     PushNotificationModule,
   ],
   controllers: [AppController, AuthController],
-  providers: [AppService, AuthService, PushNotificationService],
+  providers: [AppService, AuthService, PushNotificationService, 
+    // AppGateway
+
+  ],
 })
-export class AppModule {}
+export class AppModule { }

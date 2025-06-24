@@ -29,7 +29,8 @@ async function bootstrap() {
   //   }),
   // );
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://172.16.0.10:3004'], // Thay thế bằng domain frontend của bạn
+    // origin: ['http://localhost:3000', 'http://172.16.0.10:3004'], // Thay thế bằng domain frontend của bạn
+    origin: true,
     credentials: true, // Quan trọng để cho phép cookie
     exposedHeaders: [
       'Content-Type',

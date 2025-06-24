@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Param, Post } from '@nestjs/common';
 import { PacsService } from './pacs.service';
 import { ApiResponse } from 'src/common/api/api-response';
 import { Public } from 'src/common/decorators/public.decorator';
@@ -8,6 +8,8 @@ import { BV_PhieuChidinhDVCTService } from '../BV_PhieuChidinhDVCT/BV_PhieuChidi
 
 @Controller('pacs')
 export class PacsController {
+    private readonly logger = new Logger(PacsController.name);
+
     constructor(private readonly pacsService: PacsService,
         private readonly qLyCapTheService: BV_QLyCapTheService,
         private readonly phieuChidinhDVCTService: BV_PhieuChidinhDVCTService) { }
@@ -38,6 +40,9 @@ export class PacsController {
     async dicomViewer(@Param('patient_id') patientId: string,
         @Param('accession_number') accessionNumber: string,
         @Body() body: PostDicomViewerDto) {
+
+        this.logger.log(`Data post dicom-viewer: ${JSON.stringify({ patientId, accessionNumber, body })}`)
+
         try {
             const phieu = await this.phieuChidinhDVCTService.findById({
                 SoPhieuCD: accessionNumber,
