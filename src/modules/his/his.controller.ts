@@ -458,4 +458,24 @@ export class HisController {
             return ApiResponse.error('Get BV_PhieuChidinhDV failed!', 500, ex.message);
         }
     }
+
+    @Public()
+    @Get('get-BV_QLyCapThe')
+    @ApiQuery({ name: 'where', required: false, description: 'JSON condition, e.g. {"MaBN":"123"}' })
+    @ApiQuery({ name: 'select', required: false, description: 'Fields to select, e.g. MaBN,TrangThai' })
+    @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Limit number of records' })
+    @ApiQuery({ name: 'orderBy', required: false, description: 'Sort order, e.g. Ngay:DESC' })
+    async getBV_QLyCapThe(
+        @Query('where') whereQuery?: string,
+        @Query('select') selectQuery?: string,
+        @Query('limit') limit?: number,
+        @Query('orderBy') orderByQuery?: string,
+    ) {
+        try {
+            const data = await this.qLyCapTheService.getDataCondition(whereQuery, selectQuery, orderByQuery, limit);
+            return ApiResponse.success('Get getBV_QLyCapThe success!', data);
+        } catch (ex) {
+            return ApiResponse.error('Get getBV_QLyCapThe failed!', 500, ex.message);
+        }
+    }
 }
