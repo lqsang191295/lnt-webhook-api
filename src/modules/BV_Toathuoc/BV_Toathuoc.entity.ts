@@ -1,18 +1,136 @@
-import { Entity, Column, PrimaryGeneratedColumn, PrimaryColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-@Entity({
-  name: 'BV_Toathuoc',
-})
+@Entity({ name: 'BV_Toathuoc' })
 export class BV_ToathuocEntity {
-  @PrimaryColumn()
+  @PrimaryColumn('uuid')
   ID: string;
 
-  @Column()
-  Ngay: Date;
-
-  @Column()
-  MaBN: string;
-
-  @Column()
-  ImageName: string;
+  @Column('datetime') Ngay: Date;
+  @Column() MaBN: string;
+  @Column('uuid') IDDangky: string;
+  @Column('uuid') IDBANgoaitru: string;
+  @Column('uuid') IDPhieuthu: string;
+  @Column('uuid') IDPT_BHYT: string;
+  @Column() Sonhapvien: string;
+  @Column() IDNam: string;
+  @Column() Khoa: string;
+  @Column() Trangthai: string;
+  @Column() Sovaovien: string;
+  @Column() Hoten: string;
+  @Column() HotenKoDau: string;
+  @Column() Gioitinh: string;
+  @Column('int') Namsinh: number;
+  @Column() Dienthoai: string;
+  @Column() Diachi: string;
+  @Column() BsKetoa: string;
+  @Column('bit') ChitietSL: boolean;
+  @Column('bit') Dacap: boolean;
+  @Column('bit') Dachon: boolean;
+  @Column('bit') Dathutien: boolean;
+  @Column() Doituong: string;
+  @Column() ETrangthai: string;
+  @Column('bit') KoThutien: boolean;
+  @Column() Loaitoathuoc: string;
+  @Column() Madinhdang: string;
+  @Column('datetime') Ngaycap: Date;
+  @Column('bit') Phieuvattu: boolean;
+  @Column() SoCTBanhang: string;
+  @Column() Sophieulinh: string;
+  @Column('datetime') TGKetoa: Date;
+  @Column('bit') Trathuoc: boolean;
+  @Column() Ca: string;
+  @Column('bit') Capcuu: boolean;
+  @Column() ChichTaicho: string;
+  @Column('bit') Dadenghi: boolean;
+  @Column('bit') DaIn: boolean;
+  @Column('bit') DanhanThuoc: boolean;
+  @Column('bit') Datamung: boolean;
+  @Column('bit') DaXacnhan: boolean;
+  @Column() DichTaicho: string;
+  @Column() DichTruyenve: string;
+  @Column() Dieuduong: string;
+  @Column() DiUng: string;
+  @Column('bit') Donthuocravien: boolean;
+  @Column() Ghichu: string;
+  @Column() Ghichu2: string;
+  @Column('bit') HenTK: boolean;
+  @Column('bit') IsHHTaoThanh: boolean;
+  @Column() Ketluan: string;
+  @Column() KeyDenghi: string;
+  @Column('bit') Khachvanglai: boolean;
+  @Column('bit') Khamchuyenkhoa: boolean;
+  @Column('bit') KhongthanhBHYT: boolean;
+  @Column() Loidan: string;
+  @Column() Loidan1: string;
+  @Column() Loidan2: string;
+  @Column() Loidan3: string;
+  @Column() Loidan4: string;
+  @Column() Loidan5: string;
+  @Column() Loidan6: string;
+  @Column('datetime') NgayDenghi: Date;
+  @Column('datetime') NgayTK: Date;
+  @Column('bit') NghihuongBHYT: boolean;
+  @Column() Nghi_Lydo: string;
+  @Column('datetime') Nghi_NgayBD: Date;
+  @Column('datetime') Nghi_NgayKT: Date;
+  @Column('int') Nghi_Songay: number;
+  @Column() Nguoicap: string;
+  @Column() Nguoilap: string;
+  @Column() NoidungTK: string;
+  @Column('float') Phacdo: number;
+  @Column('bit') PhieuVTTH: boolean;
+  @Column() SoCTBH_DV: string;
+  @Column('float') SoDuyetBHYT: number;
+  @Column('int') SolanIn: number;
+  @Column('int') SoluongToa: number;
+  @Column('int') SongayHenTK: number;
+  @Column('int') SophieuDenghi: number;
+  @Column('datetime') TGGayme: Date;
+  @Column('datetime') TGHettacdungGM: Date;
+  @Column('datetime') TGXacnhan: Date;
+  @Column() Thuocchichve: string;
+  @Column('bit') ToaChaythan: boolean;
+  @Column('bit') Toadinhky: boolean;
+  @Column('bit') ToaDongY: boolean;
+  @Column('bit') ToaNgoaitru: boolean;
+  @Column('bit') YLenh: boolean;
+  @Column('uuid') IDDuyetBHYT: string;
+  @Column('uuid') MaBANoiTru: string;
+  @Column() Sophieu: string;
+  @Column('numeric') Tongtien: number;
+  @Column('smallint') SongayDung: number;
+  @Column() Quaycap: string;
+  @Column() Nguoihuycap: string;
+  @Column('datetime') Ngaycapnhat: Date;
+  @Column('bit') KoTinhToa_Bacsi: boolean;
+  @UpdateDateColumn({ type: 'datetime' }) UPDATE_DATE: Date;
+  @Column('bit') PLBinhthuong: boolean;
+  @Column('bit') PLTaikhamXV: boolean;
+  @Column('bit') PLTaikhamNT: boolean;
+  @Column('bit') PLLaytoaKK: boolean;
+  @Column() Phanloaibenh: string;
+  @Column() Loaixutri: string;
+  @Column() TenChanDoanTuNhap: string;
+  @Column() MaChanDoanTuNhap: string;
+  @Column('bit') ThuTienChungCongKham: boolean;
+  @Column() LyDoSuaToa: string;
+  @Column('numeric') Sotien1Ngay: number;
+  @Column('bit') ToaRaVienCapThuocTaiDuocNgoaiTru: boolean;
+  @Column('bit') BYT_GuiDonThuoc: boolean;
+  @Column('bit') DaTuVan: boolean;
+  @Column('datetime') NgayTuVan: Date;
+  @Column('uuid') IDPhieuTuVan: string;
+  @Column('bit') GuiSMS: boolean;
+  @Column() ImageName: string;
+  @Column() MaDonThuocQuocGia: string;
+  @Column('bit') GuiZalo: boolean;
+  @Column() NoiCap: string;
+  @Column('bit') inToaTPCN: boolean;
+  @Column('uuid') IDChiDinhGoi: string;
+  @Column() MaGoi: string;
 }
