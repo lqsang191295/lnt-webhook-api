@@ -46,22 +46,33 @@ export class PacsController {
         try {
             const phieu = await this.phieuChidinhDVCTService.findById({
                 SoPhieuCD: accessionNumber,
-                MaBN: patientId
             });
 
             if (!phieu || !phieu.length) {
+                this.logger.log(`Data post dicom-viewer: Update link failed! Not find item!`)
                 return ApiResponse.error('Post dicom viewer failed!', 500, "Not find item!");
             }
 
             phieu[0].LinkImage = body.image_viewer_link;
 
-            this.phieuChidinhDVCTService.update({
+            this.logger.log(`Data post dicom-viewer phieu[0].MaBN: ${phieu[0].MaBN}`)
+
+            if (typeof phieu[0].MaBN === 'number') {
+                phieu[0].MaBN = String(phieu[0].MaBN).padStart(6, '0');
+            }
+
+            this.logger.log(`Data post dicom-viewer phieu[0].MaBN converted: ${phieu[0].MaBN}`)
+
+            await this.phieuChidinhDVCTService.update({
                 SoPhieuCD: accessionNumber,
                 MaBN: patientId
             }, phieu[0]);
 
+            this.logger.log(`Data post dicom-viewer: Update link success!`)
+
             return ApiResponse.success('Update link success!');
         } catch (ex) {
+            this.logger.log(`Data post dicom-viewer: Update link failed! ${ex.message}`)
             return ApiResponse.error('Update link failed!', 500, ex.message);
         }
     }
