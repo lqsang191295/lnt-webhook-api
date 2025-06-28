@@ -1,9 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'BV_QLyCapThe' })
 export class BV_QLyCapTheEntity {
-  @PrimaryGeneratedColumn()
-  Ma: string;  // Thông thường PrimaryGeneratedColumn là number
+  @PrimaryColumn()
+  Ma: string; 
 
   @Column({ type: 'datetime', nullable: true })
   Ngay?: Date;
