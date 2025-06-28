@@ -55,14 +55,6 @@ export class PacsController {
 
             phieu[0].LinkImage = body.image_viewer_link;
 
-            this.logger.log(`Data post dicom-viewer phieu[0].MaBN: ${phieu[0].MaBN}`)
-
-            if (typeof phieu[0].MaBN === 'number') {
-                phieu[0].MaBN = String(phieu[0].MaBN).padStart(6, '0');
-            }
-
-            this.logger.log(`Data post dicom-viewer phieu[0].MaBN converted: ${phieu[0].MaBN}`)
-
             await this.phieuChidinhDVCTService.update({
                 SoPhieuCD: accessionNumber,
                 MaBN: patientId
