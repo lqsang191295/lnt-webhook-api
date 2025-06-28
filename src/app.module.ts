@@ -30,6 +30,10 @@ import { BV_TiepnhanBenhEntity } from './modules/BV_TiepnhanBenh/BV_TiepnhanBenh
 import { BV_PhieuTiepNhanCLSEntity } from './modules/BV_PhieuTiepNhanCLS/BV_PhieuTiepNhanCLS.entity';
 import { HT_DMPhongBanEntity } from './modules/HT_DMPhongBan/HT_DMPhongBan.entity';
 import { BV_PhieuChidinhDVEntity } from './modules/BV_PhieuChidinhDV/BV_PhieuChidinhDV.entity';
+import { HT_DMNhanSuEntity } from './modules/HT_DMNhanSu/HT_DMNhanSu.entity';
+import { HT_DMKhoaPhongEntity } from './modules/HT_DMKhoaPhong/HT_DMKhoaPhong.entity';
+import { BV_ToathuocCTEntity } from './modules/BV_ToathuocCT/BV_ToathuocCT.entity';
+import { BV_MasterEntity } from './modules/BV_Master/BV_Master.entity';
 // import { AppGateway } from './Gateway/app.gateway';
 
 console.log(' process.env.NODE_ENV === ', process.env.NODE_ENV);
@@ -81,7 +85,11 @@ const configSql = TypeOrmModule.forRoot({
     BV_TiepnhanBenhEntity,
     BV_PhieuTiepNhanCLSEntity,
     BV_PhieuChidinhDVEntity,
-    HT_DMPhongBanEntity
+    HT_DMPhongBanEntity,
+    HT_DMNhanSuEntity,
+    HT_DMKhoaPhongEntity,
+    BV_ToathuocCTEntity,
+    BV_MasterEntity
   ],
   synchronize: false,
 });
@@ -107,7 +115,7 @@ const jwtConfig = JwtModule.register({
     PushNotificationModule,
   ],
   controllers: [AppController, AuthController],
-  providers: [AppService, AuthService, PushNotificationService, 
+  providers: [AppService, AuthService, PushNotificationService,
     // AppGateway
 
   ],

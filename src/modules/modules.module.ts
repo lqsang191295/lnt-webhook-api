@@ -12,6 +12,7 @@ import { PacsModule } from './pacs/pacs.module';
 import { BV_QLyCapTheService } from './BV_QLyCapThe/BV_QLyCapThe.service';
 import { BV_QLyCapTheModule } from './BV_QLyCapThe/BV_QLyCapThe.module';
 import { HisModule } from './his/his.module';
+import { PatientModule } from './patient/patient.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { HisModule } from './his/his.module';
     NotificationModule,
     PacsModule,
     HisModule,
+    PatientModule,
   ],
   providers: [HT_ThamsoService, AD_UserAccountService, AD_UserLoggedService, BV_QLyCapTheService],
   exports: [HT_ThamsoService, AD_UserAccountService, AD_UserLoggedService, BV_QLyCapTheService],
