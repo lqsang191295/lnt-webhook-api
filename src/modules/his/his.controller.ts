@@ -26,7 +26,7 @@ export class HisController {
 
     constructor(
         private readonly qLyCapTheService: BV_QLyCapTheService,
-        private readonly phieuSieuam: BV_PhieuSieuamService,
+        private readonly phieuSieuamService: BV_PhieuSieuamService,
         private readonly toathuocService: BV_ToathuocService,
         private readonly phieuXetNghiemService: BV_PhieuXetNghiemService,
         private readonly phieuCanlamsangService: BV_PhieuCanlamsangService,
@@ -36,20 +36,18 @@ export class HisController {
         private readonly userAccountService: AD_UserAccountService,
         private readonly dmPhongBanService: HT_DMPhongBanService,
         private readonly phieuChidinhDVCTService: BV_PhieuChidinhDVCTService,
-        private readonly phieuChidinhDVService: BV_PhieuChidinhDVService
+        private readonly phieuChidinhDVService: BV_PhieuChidinhDVService,
     ) { }
 
     @Public()
     @Get('get-his-data/:mabn')
     async getHISDataByMaBN(@Param('mabn') mabn: string) {
         try {
-            const capTheData = await this.qLyCapTheService.repository.find({
-                where: {
-                    Ma: mabn,
-                },
-                select: ['Ma', 'Dienthoai', 'Hoten', 'Ngaysinh', 'Gioitinh', 'Thangsinh', 'Namsinh', 'SoBHYT', 'Diachi']
-            });
-            const sieuAmData = await this.phieuSieuam.repository.find({
+            const capTheData = await this.qLyCapTheService.findById(
+                { Ma: mabn },
+                ['Ma', 'Dienthoai', 'Hoten', 'Ngaysinh', 'Gioitinh', 'Thangsinh', 'Namsinh', 'SoBHYT', 'Diachi']
+            );
+            const sieuAmData = await this.phieuSieuamService.repository.find({
                 where: {
                     MaBN: mabn,
                     ImageName: Not(IsNull()),
@@ -476,6 +474,26 @@ export class HisController {
             return ApiResponse.success('Get getBV_QLyCapThe success!', data);
         } catch (ex) {
             return ApiResponse.error('Get getBV_QLyCapThe failed!', 500, ex.message);
+        }
+    }
+
+    @Public()
+    @Post('phieusieuam/:mabn/:sovaovien')
+    async getPhieuSieuAm(@Param('mabn') mabn: string,
+        @Param('sovaovien') sovaovien: string) {
+        try {
+            const data = await this.phieuSieuamService.execProcedure("sp_getBV_PhieuSieuam_By_SoVaoVien_ByMaBN", {
+                SoVaoVien: sovaovien,
+                Ma: mabn,
+            });
+
+            if(!data || data.length == 0) {
+                ApiResponse.error('Failed!', 500, "No data!");
+            }
+
+            return ApiResponse.success('Success!', data[0]);
+        } catch (ex) {
+            return ApiResponse.error('Failed!', 500, ex.message);
         }
     }
 }

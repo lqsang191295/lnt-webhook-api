@@ -44,25 +44,32 @@ export class PacsController {
         this.logger.log(`Data post dicom-viewer: ${JSON.stringify({ patientId, accessionNumber, body })}`)
 
         try {
-            const phieu = await this.phieuChidinhDVCTService.findById({
-                SoPhieuCD: accessionNumber,
+            // const phieu = await this.phieuChidinhDVCTService.findById({
+            //     SoPhieuCD: accessionNumber,
+            //     MaBN: patientId
+            // });
+
+            // if (!phieu || !phieu.length) {
+            //     this.logger.log(`Data post dicom-viewer: Update link failed! Not find item!`)
+            //     return ApiResponse.error('Post dicom viewer failed!', 500, "Not find item!");
+            // }
+
+            // phieu[0].LinkImage = body.image_viewer_link;
+
+            // await this.phieuChidinhDVCTService.update({
+            //     ID: phieu[0].ID
+            // }, phieu[0]);
+
+        
+            const data = await this.phieuChidinhDVCTService.execProcedure("sp_UpdateLinkImage_PhieuChidinhDVCT", {
+                patientId,
+                accessionNumber,
+                link: body.image_viewer_link
             });
 
-            if (!phieu || !phieu.length) {
-                this.logger.log(`Data post dicom-viewer: Update link failed! Not find item!`)
-                return ApiResponse.error('Post dicom viewer failed!', 500, "Not find item!");
-            }
+            this.logger.log(`Data post dicom-viewer: Update link success! ${JSON.stringify(data)}`)
 
-            phieu[0].LinkImage = body.image_viewer_link;
-
-            await this.phieuChidinhDVCTService.update({
-                SoPhieuCD: accessionNumber,
-                MaBN: patientId
-            }, phieu[0]);
-
-            this.logger.log(`Data post dicom-viewer: Update link success!`)
-
-            return ApiResponse.success('Update link success!');
+            return ApiResponse.success('Update link success !!!');
         } catch (ex) {
             this.logger.log(`Data post dicom-viewer: Update link failed! ${ex.message}`)
             return ApiResponse.error('Update link failed!', 500, ex.message);
